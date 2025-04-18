@@ -1,0 +1,1768 @@
+Detecting multivariate market regimes via
+clustering algorithms
+2024-03-13
+James Mc Greevy
+james.mcgreevy@kaiju.ai
+KCM Quantitative & AI Researcher
+(Corresponding Author)
+Aitor Muguruza
+aitor.muguruza-gonzalez@kaiju.ai
+KCM Director of Data Science
+Zacharia Issa
+zacharia.issa@kcl.ac.uk
+King’s College, London
+Cris Salvi
+c.salvi@imperial.ac.uk
+Department of Mathematics
+Imperial College, London
+Jonathan Chan
+jonathan.chan@kaiju.ai
+KCM Quantitative & AI Researcher
+Zan Zuric
+zan.zuric@kaiju.ai
+KCM Quantitative & AI Researcher
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+Detecting multivariate market regimes via
+clustering algorithms
+2024-03-13
+Abstract
+In this paper we study the joint dynamics of multivariate time series using an unsupervised
+learning technique and demonstrate its use in pairs trading and portfolio design. We present a
+novel non-parametric market regime detection method for multidimensional data. The detection
+procedure is based on a k-means clustering algorithm which makes use of distances between dis-
+tributionstodiscriminatebetweendifferentmarketregimes,whicharecategorisedbytheirmean,
+variance and correlation. In particular, we empirically investigate the performance of the algo-
+rithm endowed with either Wasserstein distances or Maximum Mean Discrepancies. We suggest
+a two-step approach to clustering multivariate data using this new method, which we show to be
+effective on both synthetic and real world data. We demonstrate how our new approach can be
+usedtoobtainapproximationstothemean,varianceandcorrelationbetweentwoassetsatagiven
+point in time. We further show that these values can be used in the context of Modern Portfolio
+Theory to form profitable trading strategies when using two assets.
+Key takeaways
+• We develop an adapted k-means algorithm that uses the 2-Wasserstein distance metric or Max-
+imum Mean Discrepancy, and d-dimensional data in order to identify changes in joint market
+regimes between assets, in particular correlation.
+• We create a two-step process for finding the marginal and joint market regimes in synthetic and
+real data.
+• Usingthetwo-stepprocess,weformapproximationstothemean,varianceandcorrelationwhich
+then subsequently inform profitable portfolios of pairs of stocks.
+Keywords: market regimes, k-means clustering, p-Wasserstein, MMD, mean-variance optimisation
+JEL Codes: C14, C15, G6, G11
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+1 Introduction
+Clusteringisawell-knownandstudiedfieldinunsupervisedlearning. Thegoalofaclusteringalgorithm
+is to discover patterns and relationships between the input data that are currently unknown. Datum
+grouped into a particular cluster should have more similarity with data within the same group than
+with data in another group according to some metric [TX15]. Naturally, clustering algorithms are
+particularly useful when we can not immediately categorise data into groups via other means or when
+weareapproachinganewdatasetwithunknowncharacteristics. Clusteringtechniquesarethusoften
+employed with new time series data such as those of a financial origin. In the field of time series
+clustering, working with a single time series, referred to as univariate data, is often simpler than
+working with multiple time series, referred to as multivariate time series, in part due to lower time
+and memory complexity. Indeed, there is a wide body of research on clustering univariate time series
+[DM12]andavarietyofclusteringmethodsfortimeseriesdatahavebeenstudiedandemployed, such
+as those summarised in [Lia05].
+Clusteringmultivariatetimeseriesisaparticularlyinterestinganddifficultchallenge. Whenapply-
+ing clustering algorithms to multivariate data, we open up new areas of study. For example, suppose
+wewantedtoformaseriesofriskdiversifiedinvestmentportfoliosfromtheRussell1000Index. Form-
+ing a time series from the returns for each stock, we might then employ a clustering algorithm such as
+the celebrated k-means algorithm [Mac67] in order to form our portfolios [AAH+17]. Often such an
+approach is accompanied by a dimension reduction technique such as Principal Component Analysis
+(PCA)[Pea01]andavarietyofmultivariateclusteringmethodsarebuiltusingPCAandawell-known
+clustering technique [Li19] [BBRW20] [HJKS01].
+Ofcourse,insteadofclusteringeachstockintoclustersbasedontheentiremultivariatetimeseries,
+we might cluster segments of the multivariate time series. Such clusters might then represent certain
+periodswherethejointdynamicsordistributionofthemultivariatetimeserieshavechanged, perhaps
+duetoamarket regime changefromabull toabear marketandviceversa. Thiscanbeaparticularly
+interesting area of study that can inform both trading strategies and risk management.
+The idea of bull and bear markets however is a simplification of the general philosophy of market
+regimes,wheresegmentsofreturns,univariateormultivariate,aresplitintodifferentgroupsorregimes
+each characterised by a different underlying distribution [HI23]. Thus one need not be limited to just
+two market regimes. Indeed, we might instead divide market returns into a three state model: a bull
+regime of particularly high returns, a bear regime of particularly low returns and a ‘normal’ regime of
+somewhat low, positive returns in the middle [PRSX07]. We might otherwise subdivide the bull and
+bear markets into two states of bull correction and bull, and bear and bear rally respectively as in
+[MMS12], [GT05].
+Themethodthroughwhichtheseregimesaredeterminedandclassifiedisreferredtoasthemarket
+regime clustering problem (MRCP) and has been the subject of rigorous study. This problem may
+also be viewed as a subset of studies related to change point detection. In such studies, one works to
+identifychangepointsinfinancialmarkets,pointsatwhichtheunderlyingregimeormodeldrivingthe
+marketreturnsisassumedtohavechanged[HNZ16]andwherethenumberofsuchchangepointsmay
+be known or unknown [Cho07]. Certain studies work specifically on determining anomalous datum
+using outlier detection methods [IM17] [ACFL20].
+One of the most popular regime detection methods is the Hidden Markov Model [Ham89]. In such
+a model, we would have an observed process, X, and an unobserved process, S. The observed process
+X may be the current return of a stock we are interested in while S would be the Markovian latent
+state or regime that it is currently following. We say that X is observed as we may actively monitor
+its evolution whereas S is unobserved as we have no method of directly monitoring it. Instead, we
+use observations of X to approximate the current state S [LR09]. One drawback of this approach is
+that it is not model free - we must model the latent state variable, often using a Gaussian distribution
+[CDL+16]. Other approaches for determining regimes include directional change [CT17] and Bayesian
+techniques [CGOY15].
+Classic unsupervised learning techniques have also been deployed more recently on the MRCP.
+The fuzzy c-means algorithm, a close relative of the k-means clustering algorithm, has been used to
+identify time series clusters in stock and sector data as in [CPS+22]. These clusters were then used
+to train single non-linear regime models in order to forecast future stock prices. A more distinctive
+approach comes from clustering not the time series data itself, but the empirical measures to which
+each segment of the time series can be associated [ANN14]. Indeed, this will be the approach utilised
+1
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+in this paper which we will endeavour to explain more clearly in the coming chapters.
+Many of the techniques discussed may theoretically be applied to both univariate and multivariate
+time series. They are, however, often beguiled by problems concerning the curse of dimensionality,
+and thus efficiency, in the multivariate case. One must also consider that the underlying distribution
+characterising a regime is a joint distribution in the case of multivariate time series. In the univariate
+case, these regimes can be identified by their mean and variance [PRSX07]. When working with mul-
+tivariatetimeseries, othercharacteristics, suchasthecorrelationbetweenindividualunivariateseries,
+also play a role. Clustering based on the cross-correlation between time series has been studied before
+and we refer the reader to the examples listed for further discussion [EHK+17] [LOV21] [GLMT08].
+1.1 Our contributions
+Thispaperexpandsupontheworkin[HIM21],inwhichanunsupervisedlearningalgorithmisdeployed
+to effectively cluster one-dimensional financial time series into market regimes with a high degree of
+success and is found to be superior to comparable algorithms, such as the Hidden Markov Model.
+This algorithmis a variant of theclassic k-means algorithmand uses the p-Wasserstein distanceas its
+distance metric. The algorithm is thus dubbed the WK-means algorithm.
+Our main contributions are as follows. We create a novel, model-free algorithm that extends the
+WK-means algorithm such that it may work with data of dimension d for d > 1, before showing
+that this algorithm is effective in detecting, offline, times of market regime change and, in particular,
+changes in the correlation structure between two assets. We also show that this new algorithm is
+mutableandcanbeusedwiththeMaximumMeanDiscrepancyinsteadofthep-Wassersteindistance.
+Wethenuseourfindingsinconjunctionwith[HIM21]todevelopamethodfordeterminingthecorrect
+number of clusters in a univariate time series and further, to develop a profitable two-asset trading
+strategy based on Modern Portfolio Theory.
+Section 2 will review and summarise the k-means algorithm, the Maximum Mean Discrepancy, the
+p-WassersteindistanceandtheWK-meansalgorithm. Section3willintroducethe1-dimensionalWK-
+meansalgorithmandourextensiontothed-dimensionalspace. Section4willshowcaseourexperiments
+usingsyntheticdataandtheabilityofouralgorithmtodetectchangesinmarketregimescharacterised
+by changes in the mean, variance and correlation of the underlying probability distribution used to
+generate the synthetic data. Section 5 will show the effectiveness of the algorithm when using real
+market data while section 6 will discuss how knowledge of the newly formed clusters can help us build
+profitable portfolios. Finally, section 7 will conclude our work and discuss possible future research.
+2 Distance metrics and clustering algorithms
+We refer to changes in the mean and variance of the underlying marginal distributions of the tested
+assets as changes in mean-variance regime while changes in the correlation between the assets are
+referred to as changes in correlation regime. Collectively, we refer to changes in the underlying joint
+distribution as regime change, and we refer to the overall clustering problem as the market regime
+clustering problem (MRCP). In order to study the regimes, we must first define our method of choice:
+an adaption of the well-known k-means algorithm, wherein we replace the commonly used Euclidean
+distance with one of the p-Wasserstein distance or the Maximum Mean Discrepancy.
+2.1 p-Wasserstein distance
+The p-Wasserstein distance was first defined by Leonid Kantorovich in the context of optimisation
+methods[Kan60]. Itisoft-associatedwiththeoptimaltransportproblemand, wherep=1, theEarth
+mover’s distance (EMD) [Mon81].
+Definition 2.1 (One-dimensional p-Wasserstein distance). Let µ and ν be probability measures on R,
+such that µ,ν ∈ P (R), where P (X) is the set of probability measures on X with finite pth moment.
+p p
+Suppose µ and ν have cumulative distribution functions F (x) and F (x) respectively. Then the pth
+µ ν
+Wasserstein distance is defined as
+(cid:18)(cid:90) 1 (cid:19)1
+p
+W (µ,ν):= |F−1(q)−F−1(q)|pdq
+p µ ν
+0
+2
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+Themulti-dimensionaldefinitionissimilar(B.5). Ithasbeenshownthatthep-Wassersteindistance
+is indeed a metric, and we therefore can in fact use the p-Wasserstein distance as our distance metric
+in the k-means clustering algorithm on the relevant space. Furthermore, the concept of an average or
+central measure amongst a set of measures has a natural form when using the p-Wasserstein distance.
+This is called the Wasserstein barycentre (B.6).
+2.2 Maximum Mean Discrepancy
+The Maximum Mean Discrepancy is an integrable probability metric, first proposed in [BGR+12].
+Definition 2.2 (Maximum Mean Discrepancy (MMD), [BGR+12] (Definition 2, page 726)). Let F
+be a class of functions f :X →R and let X and Y be random variables defined on a topological space
+X. Let µ and ν be the Borel probability measures of X and Y respectively and suppose that x and y are
+independent samples drawn from X and Y. Then the Maximum Mean Discrepancy (MMD) between µ
+and ν is defined as
+(cid:32) (cid:33)
+MMD[F,µ,ν]:= sup E [f(x)]−E [f(y)] .
+µ ν
+f∈F
+If x=(x ,...,x ) and y =(y ,...,y ) where x ∼µ and y ∼ν, then a biased empirical estimate of
+1 n 1 m i j
+the MMD is given by
+(cid:34) n m (cid:35)
+1 (cid:88) 1 (cid:88)
+MMD [F,x,y]:= sup f(x )− f(y ) .
+b n i m j
+f∈F
+i=1 j=1
+An important aspect to the MMD is the class of functions F over which it is defined. Although
+other candidates exist, kernel methods are often used to define F. In [BGR+12] the unit ball in
+a reproducing kernel Hilbert space (RKHS), defined as a Hilbert space H (B.10) and an associated
+reproducing kernel κ:X ×X →R (B.11), is suggested for F. When defined on a RKHS, if the choice
+of RKHS is universal (B.12), then the MMD can be shown to be a metric when defined on a compact
+space X.
+In the case of X being non-compact, then it has been shown that the MMD is still a metric if the
+kernel κ is a characteristic kernel [FGSS08] (B.13). The Gaussian kernel defined as
+κ :Rd×Rd →[0,∞], κ (x,y)=exp(−∥x−y∥2 /2σ2),
+G G Rd
+for (x,y) in Rd×Rd, is a characteristic kernel on the set of Borel measures on X [FGSS08]. We will
+use either the MMD with F = (H,κ ) or the p-Wasserstein distance as the distance metric when
+G
+clustering.
+2.3 The WK-means algorithm
+In this section we explain how we can combine the k-means algorithm and p-Wasserstein distance in
+order to yield the WK-means algorithm as in [HIM21]. Indeed, in [HIM21], the authors argue that
+the p-Wasserstein distance is the natural choice when clustering probability measures P (R) defined
+p
+on the metric space (X,D), in particular for the univariate case of dimension d=1 and indeed, they
+show the WK-means algorithm to be superior to the classic Hidden Markov Model.
+We note that the goal of the market regime clustering problem (MRCP) can be stated as the task
+of classifying segments of return series (r ) where
+i i≥0
+r =(r1,...,rn),
+i i i
+for n∈N and rj ∈Rd for j ∈{1,...,n}, where d∈Z . We note as well that for any vector r ∈Rn,
+i + i
+we may form an empirical measure µ = 1 (cid:80)n δ , using the dirac delta function δ. Therefore,
+ri n j=1 rj
+i
+we may rewrite the goal of the MRCP as being equivalent to assigning labels to empirical probability
+measures µ∈P (Rd), where P (Rd) is the set of probability measures on Rd with finite pth moment.
+p p
+Inpracticewewishtotakepotentiallyoverlappingsegmentsofreturnsdataford assetsandgather
+the empirical measures associated to these segments together into distinct clusters, each defined by an
+underlying distribution, which we then refer to as market regimes.
+3
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+We take X = Rd for some d∈Z and fix N ∈ N. We work with the log-returns of elements of the
++
+form S =(s ,...,s ) ∈ S(Rd), which are price paths of d financial assets. For S ∈S(Rd), we define
+0 N
+the vector of log-returns rS associated to S as
+rS =log(s )−log(s ),
+i i+1 i
+for 0≤i≤N −1 and thus rS ∈ S(Rd).
+Using definition B.1 we define a lift l that will take our original returns data of length N, and
+divide it into M segments of length h using an overlap parameter of length h , where h , h ∈ N,
+1 2 1 2
+M :=⌊ N ⌋ and ℓ := ℓ such that
+h1−h2 h1,h2
+ℓi(rS)=(rS ,...,rS ),
+(h1−h2)(i−1) h1+(h1−h2)(i−1)
+for i = 1,...,M. We now have M segments of length h for which h returns overlap between each
+1 2
+adjacent segment. As discussed, any segment of returns data r ∈ℓ(rS) with r =(r1,...,rh1) can be
+i i i i
+associated to an empirical measure µ = 1 (cid:80)n δ . Therefore we may define a family of measures
+i n j=1 rj
+i
+K:={(µ ,...,µ ):µ ∈P (Rd),i=1,...,M}. (1)
+1 M i p
+We now have a set of measures associated to our raw multivariate time series of returns data and
+it is this set of measures we wish to cluster into regimes. In order to do so, we make certain adaptions
+to the traditional k-means algorithm.
+Step 1: Choose k initial centroids
+The initial step of choosing k initial centroids, µ¯ :={µ¯ } is similar to the standard k-means
+j 1≤j≤k
+algorithm. If using the naive k-means clustering algorithm, then we choose uniformly at random k
+measuresfromourfamilyofmeasuresK tobeourinitialcentroids. Ifusingthek-means++algorithm
+[AV07],thenthedistancemetricusedintheweightedprobabilitydistribution,D,isthep-Wasserstein
+distance, W , while all other steps remain the same.
+p
+Step 2: Define the clusters
+We then calculate the distance between each point µ and each centroid in µ¯. Point µ is then
+i i
+assigned to the jth cluster for which its distance to the jth centroid is smallest. More formally, we
+define the set of clusters such that for j =1,...,k
+C :={µ ∈K:argminW (µ ,µ¯ )=j}.
+j i p i l
+l=1,...,k
+Step 3: Define the new centroids
+Finally, we define a new centroid for each cluster using the p-Wasserstein barycentre (B.6). This
+is prudent as the barycentre of a family of measures {µ } is the measure µ¯ which minimises the
+i i≥1
+within-cluster variation (B.2). By minimising the within cluster variation, the total-cluster variation
+is thus minimised (B.3).
+The final adaption is to the stopping rule (B.4) and its loss function l. The adaption is quite
+natural wherein, instead of using the squared Euclidean distance to measure the distance between the
+old and new cluster centres, we simply replace this with the p-Wasserstein distance. We then stop
+the algorithm once the difference in the old and new centroid values after each iteration falls below a
+preset parameter ϵ.
+Definition2.3(WK-meansalgorithm,[HIM21](Definition2.7,page11)). LetK⊂P (Rd)beafamily
+p
+of measures with finite pth moment. We refer to the k-means clustering algorithm on (P (Rd),W ),
+p p
+withaggregationmethodgivenbythep-WassersteinbarycentreandlossfunctionB.4astheWasserstein
+k-means algorithm or WK-means algorithm.
+3 The WK-means and MMDK-means algorithms
+In this section, we show how the WK-means algorithm is implemented in practice for the generic
+d-dimensional case (d > 1). Implementation of the univariate (d = 1) case can be found in [HIM21].
+We also show how we may use the Maximum Mean Discrepancy in order to form a similar algorithm
+which we dub the d-dimensional MMDK-means algorithm.
+4
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+3.1 The d-dimensional WK-means algorithm
+3.1.1 Background
+Computation of the p-Wasserstein distance in Rd, d> 1, is known to be computationally demanding
+for h or M large [BDPR12], with evaluation between multi-dimensional measures often numerically
+1
+intractable [BKN+19]. In addition, the Wasserstein barycentre in higher dimensions is often difficult
+to compute if not completely infeasible. Many algorithms have been proposed to help overcome this
+problem. These include a mixture of fixed support methods, where the atoms of the barycentre are
+fixedinadvanceandtheiroptimalweightingsneedonlybefound,andfreesupportmethods,wherethe
+atomsandweightingsarecomputed. Anumberofmethodsrelyonsomeformofentropyregularisation
+[CGJ20], [CD14] while others use tools such as Bregman projections [LWWY17], stochastic gradient
+descent methods [BDPR12] and interior point methods [GWXY19]. Sliced Wasserstien distances are
+also often used as a substitute for the true p-Wasserstein distance.
+3.1.2 Approach
+In our approach we build on the framework of the WK-means algorithm as presented in section 2
+but we use different methods to that of the uni-dimensional implementation. We work on the space
+(P (Rd),W ),d>1. Werecallthateachempiricalmeasureµ isformedfromasegmentofreturnsdata
+2 2 i
+r ∈ℓ(rS)withr =(r1,...,rh1)andhenceµ isinfactadiscretedensitydistributioninRd. Suppose
+i i i i i
+we take two measures µ and µ from K (1) formed from segments r ∈ ℓ(rS) with r = (r1,...,rh1)
+i j i i i i
+and r ∈ℓ(rS) with r =(r1,...,rh1) respectively, for i,j ∈1,...,M.
+j j j j
+Wedescribetheelementsofr andr , andthustheatomsof µ andµ respectively, asbeingpoint
+i j i j
+cloudsXandYinRd ofsizeh . Asdiscussedin[BDPR12]wemayconsiderthe2-Wassersteindistance
+1
+between X and Y as
+(cid:88)
+W (µ ,µ )2 =W (X,Y)2 = min ∥X −Y ∥2,
+2 i j 2 i π(i)
+π∈Πh1
+i∈I
+where Π is the set of all permutations of h elements and I = {1,...,h }. This distance is then
+h1 1 1
+found by computing the optimal assignment i → π∗(i) that minimises W (X,Y)2. The problem can
+2
+be viewed as a linear programming problem such that we aim to find
+(cid:88)
+W (X,Y)2 = min B ∥X −Y ∥2,
+2 i,j i j
+B∈Bh1i,j∈I2
+where B is the set of bistochastic matrices - that is, nonegative matrices with rows and columns
+h1
+summing to 1. This can be solved using the Hungarian algorithm [Kuh55] which is worst-case O(h3),
+1
+or O(h2.5log(h )) using dedicated solvers [BDM12].
+1 1
+The computational complexity of these algorithms typically makes this problem unattractive to
+solve for large h or M. However, in python, use of the cython cdist function from the scipy.spatial
+1
+package when computing the euclidean distance and the cython linear sum assignment function from
+the scipy.optimize give an acceptable speed of computation for our experiments.
+As discussed in section 3.1.1, computation of the Wasserstein barycentre can be difficult if not
+infeasible. In order to reduce the computational complexity, we restrict the possible atoms of the
+barycentre to those of the measures it is clustering. If the data is particularly sparse, this may lead
+to incorrect barycentres but assuming we work with a sufficient size of returns data, we reason that it
+should act as a sufficient approximation. Having restricted our search space, we then form an M×M
+distance matrix W, where the ith,jth entry is the 2-Wasserstein distance between the ith and jth
+measures.
+Suchamatrixisnaturallysymmetricwhichcanbeusedtofurthercutdownourcomputationtime.
+We also know that W = 0 where i = j, and thus W = 0 for i = 1,...,M. Using the cdist and
+ij ii
+linear sum assignment functions to find the 2-Wasserstein distance, W (µ ,µ ), as discussed, we form
+2 i j
+our distance matrix, which is O(M(M−1)), and proceed to sum the rows. The row with the minimum
+2
+sum is judged to be the entry of the measure which minimises the distance to all other measures in
+theclusterandishencethe2-Wassersteinbarycentre. Exhibit1showsaflowdiagramofthedescribed
+steps.
+5
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+ W 11 W 12 ··· W 1M  (cid:80) j W 1j 
+(cid:80)
+W ij :=W 2 (µ i ,µ j )→    W . . 21 W . . 22 ··· W . . 2M    →    j . . W 2j    →
+ . . ··· .   . 
+(cid:80)
+W W ··· W W
+M1 M2 MM j Mj
+(cid:110)(cid:88) (cid:111)
+q :=argmin W ,
+ij
+i
+j
+µ¯ :=µ
+q
+Exhibit 1: Barycentre computation flow diagram
+3.2 The d-dimensional MMDK-means algorithm
+Our approach when using the MMD as the distance metric is analogous to that of the d-dimensional
+WK-means algorithm. An important difference between the two is that the MMD is often easier to
+compute in higher dimensions. When working with discrete distributions, we compute an unbiased
+estimate of the squared MMD (B.14).
+Our choice of kernel function is the Gaussian kernel (2.2), a choice which requires a bandwidth
+parameterσ. Theoptimumchoiceofkernelsizeisanareaofactiveresearchanditremainsaheuristic.
+We found that averaging across a number of choices of bandwidth parameter on the scale of the
+constituent data worked well in our experiments, as opposed to instances of our bandwidth parameter
+being much larger than the data, which led to poor results. Finally, we follow the same framework as
+thed-dimensionalWK-meansalgorithmanddefinethebarycentretobethemeasureinagivencluster
+which minimises the distance to all other measures.
+Remark 3.1. Going forward, we will refer to our new algorithms as the 2-d WK-means algorithm
+and the 2-d MMDK-means algorithm respectively, and to the uni-dimensional WK-means algorithm as
+either the uni-d 1-WK-means algorithm or the uni-d 2-WK-means algorithm. We do this in order to
+highlight both the dimensionality of the data we run each algorithm on, and the choice of p used for
+the p-Wasserstein distance in each uni-dimensional algorithm.
+4 Synthetic data experiments
+In this section, we test the 2-d WK-means and 2-d MMDK-means algorithms on synthetic data using
+two time series generated from either a classic geometric Brownian motion (GBM) or a Merton jump
+diffusion (MJD) process.
+The synthetic data generated from the GBM and MJD processes have a shared schema. Given
+T ∈N and a time interval [0,T], we define a mesh with increments that roughly represent one market
+hour. Taking n:=252×7 to be the number of market hours in a market year, we set
+(cid:40)(cid:34) (cid:35) (cid:41)
+i−1 i
+∆:= , :i=1,2,...,n×T .
+n n
+Therefore, T can be thought of as the number of market years and we will take T = 20 for our
+experiments. When generating our data using this mesh, the majority of points will fall into what we
+designate as a ‘normal’ regime with a particular underlying distribution.
+At certain points this regime will change. Our goal is to study changes in the joint distribution of
+our assets, and so these changes will be changes of the mean and variance of the synthetic assets, of
+their correlation structure or a mixture of both.
+Using the mesh structure above, we generated two synthetic price series S and S , and calculated
+1 2
+the log-returns rS ∈ S(R2) where S := (S ,S ). The log-returns rS have a joint distribution f
+1 2 S1,S2
+and marginal distributions given by f and f . In line with B.1, we created a lifted stream of data
+S1 S2
+l(rS)∈S(S(R2)), andsubsequentlyafamilyofempiricalmeasuresK, bysegmentingourreturnseries
+into M segments.
+6
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+In order to create the lifted stream, we first choose values for h and h . In [HIM21], when testing
+1 2
+the original univariate WK-means algorithm, the authors choose h = 35 and h = 28 given h = 35
+1 2 1
+corresponds to approximately one market week in market hours with h being one market day short
+2
+of that. Moving forward, we will take h =35 and h =28 but we will further discuss the values of h
+1 2 1
+andh forthe2-d WK-meansand2-d MMDK-meansalgorithmsinthecontextofrealdatainsection
+2
+5.
+Werantheuni-d p-WK-meansand2-d algorithmsovertheliftedstreamofdatal(rS), returningk
+centroids {µ¯ } and clusters {C } . We display our results primarily using a combination
+i i=1,...,k j j=1,...,k
+ofthreedifferentplots. Anygivenplotwillconsistofanumberofcolours,eachbelongingtoadifferent
+cluster C , for j =1,...,k. Should our algorithms be effective in the given experimental environment,
+j
+we would expect elements placed in the same cluster, and thus designated with the same colour, to
+appear in well-defined groups.
+Thefirsttypeofplotisreferredtoasamean-varianceplot. Giveneachempiricaljointdistribution
+µ∈K is formed from a multivariate time series and is a discrete distribution, it may be written in the
+form given in exhibit 2.
+(cid:18) (cid:19)
+r r ··· r
+11 12 1h1
+r r ··· r
+21 22 2h1
+Exhibit 2: Matrix form of a 2×h empirical distribution µ.
+1
+Each row is thus a marginal distribution of the joint distribution and each marginal distribution
+willhaveanassociatedmeanandvariance. Thereforeeachmarginaldistributioncanbeprojectedonto
+R2 via the mapping
+M :P (R)→R2,
+p p
+(cid:32) (cid:33)
+(cid:113)
+µ → V(µ ),E(µ ) ,
+fSi fSi fSi
+for i=1,2, which is simply a scatter plot of each measure in mean-variance space. Each point is then
+colored according to its cluster membership. Using this mean-variance plot allows us to visualise how
+well our algorithms cluster along each of the marginal distributions f and f .
+S1 S2
+Thesecondplotwemakeuseofisaplotofthelog-returnsofeachassetwhichaidsusinvisualising
+the correlation between the points in each cluster. We identify each cluster, and its points therein,
+with a color.
+Finally, our third plot will be a colored time series plot. In a similar manner to the second
+plot, we partition the two price series S ,S such that each partition is colored according to its
+1 2
+centroid membership. The centroid membership is the first centroid to which a particular price can
+be associated. We will also apply a colored shade to the grid points indicating the correct periods of
+regimechangewhichshouldallowustovisuallyascertainhowwellthealgorithmispickingupperiods
+of regime change.
+In order to numerically evaluate the accuracy of our clustering algorithm, we follow the approach
+of [HIM21] and consider three scores of accuracy: total accuracy, accuracy during the normal regime
+(regime-off) and accuracy during periods of regime change (regime-on). Confidence intervals of 95%
+arecalculatedbyassumingtheCLTholdssuchthatCI=1.96∗√σ ,whereσ isthestandarddeviation
+n
+of the scores and n is the number of trials.
+Each joint regime is a combination of the mean-variance regime and the correlation regime. The
+mean-variance regime of a particular joint regime is dictated by the mean-variance regime of each un-
+derlyingasset. Thisisacombinationofalowervariance/highermean(bull)andhighervariance/lower
+mean (bear) market for each asset. The correlation regime is also one of two. We refer to the correla-
+tion regime as being either the ‘normal’ correlation regime or the ‘abnormal’ correlation regime. We
+refer to the combination of joint Regime (JR) = (Bull, Bull, Normal) as being the standard regime.
+The number of joint regimes in each of our experiments will dictate the number of clusters k we test
+for.
+7
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+4.1 Merton jump diffusion process
+In this section we generate two synthetic price series modelled as Merton jump diffusion processes.
+A similar analysis was conducted using synthetic prices series generated from a Geometric Brownian
+motion and results will be discussed. Detailed discussion of the price generation process is included in
+appendix C.
+We take M(θ) to be a family of models indexed by a parameter set θ ⊂ R10. For each regime,
+the parameter set θ is characterised by the means (µi) and standard deviations (σi) per unit time of
+the assets used to generate the geometric Brownian motion, the intensity (λ) of the Poisson process,
+the means (γi) and standard deviations (δi) per unit time of the jump process, and the instantaneous
+correlation (ρ) of both assets for i=1,2 such that θ =(µ1,µ2,σ1,σ2,λ,γ1,γ2,δ1,δ2,ρ).
+4.1.1 Fixed correlation regime
+In this experiment we tested how well the 2-d algorithms picked up a change in mean-variance regime
+characterised by a change in the mean and variance of the generator MJD. We fixed the correlation
+ρ for values of ρ = −1,−0.5,0,0.5, and 1 and compared the results of our novel algorithms to those
+of the univariate algorithm tested on each asset individually using the 1- and 2-Wasserstein distances.
+We generated Merton jump diffusion paths for each asset using the parameter sets
+θ =(0.05,0.05,0.2,0.2,5,0.02,0.02,0.005,0.005,ρ), and
+0
+θ =(−0.05,−0.05,0.35,0.35,10,−0.04,−0.04,0.04,0.04,ρ)
+1
+suchthatθ (JR )andθ (JR )correspondtoabullandbearmarketregimerespectively. Onceagain,
+0 0 1 1
+we took Si = 100 for i = 1,2. In these experiments we always had exactly two different correlation
+0
+regimes and thus we took k =2 throughout.
+We began by fixing our assets such that both would undergo a regime change at the same time.
+Thus we had two combinations of joint regime JR = (Bull, Bull, Normal) and JR = (Bear, Bear,
+0 1
+Normal) and took k = 2. We then fixed ρ = 1. Approximately one quarter of the path, split equally
+to ten randomly generated points on the time axis, was generated using the JR parameter set with
+1
+the rest generated from the JR set. Exhibit 3(a) shows an example of such a MJD path with the
+0
+regime change periods highlighted on the grid in red. Alongside, exhibit 3(b) shows the log-returns
+associated to this example path, again with the regime changes highlighted.
+(a) MJDpricepathswithρ=1,regime (b) MJD log-returns with ρ = 1, regime
+changeshighlighted. changeshighlighted.
+Exhibit 3: MJD synthetic price paths with ρ=1, and their associated log-returns.
+We ran the algorithms on the same simulated path. We report the accuracy scores for each
+algorithm in exhibit 4 for a total of n=50 runs.
+8
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+Algorithm Total Regime-on Regime-off
+2-d WK-means 94.04% ± 1.90% 81.46% ± 8.05% 98.00% ± 0.15%
+Uni-d 1-WK-means 93.06% ± 2.45% 85.37% ± 8.38% 95.40% ± 2.33%
+Uni-d 2-WK-means 94.63% ± 1.88% 81.80% ± 7.73% 98.68% ± 0.07%
+2-d MMDK-means 90.82% ± 2.12% 93.97% ± 1.00% 89.56% ± 3.00%
+Exhibit4: Accuracyscoreswith95%CI,MJDsyntheticpathwithsimultaneousmean-varianceregimes
+and ρ=1, n=50 runs.
+Allfouralgorithmsexhibitstrongregime-on,regime-offandtotalaccuracyscores. The2-d MMDK-
+means algorithm, in particular, returns an impressive regime-on accuracy score indicating that it is
+veryeffectiveatpickingupchangesinthemeanandvarianceofourunderlyingassets. Wenotethatthe
+2-d WK-means, and 2-WK-means algorithms exhibit lower regime-on accuracy scores when compared
+to the geometric Brownian motion case. This is not unreasonable given both the 2-d WK-means and
+the uni-d 2-WK-means algorithms use the 2-Wasserstein distance and thus may be more susceptible
+to extreme outliers that would occur in a Merton jump diffusion process.
+Wevisualisetheclusteringgeneratedbythe2-d WK-meansusingourthreetypesofplotinexhibit
+5. We see that the algorithm has done a good job of picking up the two distinct regimes and we note
+that the red cluster centroid has higher variance than that of the green cluster centroid, as we would
+expect from our parameter set. Exhibit 5(b), which shows the simulated historical price series for S
+1
+colouredaccordingtoeachsegment’sassociatedcluster, alsoreinforcesthestrongdetectionproperties
+of our algorithms. As expected, the correlation amongst all values in both clusters is approximately
+one as seen in exhibits 5(c) and 5(d).
+(a) S1 mean-varianceclusteringplot. (b) S1 priceseriessegmentedbycluster
+association.
+(c) Clusters1and2log-returnsplotwith (d) Centroids1and2log-returnsplotwith
+clustercolours. clustercolors.
+Exhibit 5: MJD, ρ=1, example mean-variance, correlation and price series plots.
+Having tested the case of ρ=1, we then subsequently varied the correlation to values of
+ρ∈{−1,−0.5,0,0.5} with results for each test included in appendix C.3.1. The accuracy scores for
+the2-d WK-meansalgorithmtendtobelowerthantheanalogousGBMcasebutstillstrong. The2-d
+MMDK-means algorithm, on the other hand, outperforms the 2-d WK-means algorithm, returning
+very strong scores in each test.
+9
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+4.1.2 Fixed mean-variance regime
+In this series of experiments we tested how well the 2-d algorithms picked up a change in correlation
+regime, characterised by a change in the correlation ρ between the two assets. In order to do so, we
+fixedthemean-varianceregimeandvariedthecorrelationbetweentwovaluesρ andρ . Wegenerated
+0 1
+Merton jump diffusion paths for each asset using the parameter sets
+θ =(0.05,0.05,0.2,0.2,5,0.02,0.02,0.005,0.005,ρ ), and
+0 0
+θ =(0.05,0.05,0.2,0.2,5,0.02,0.02,0.005,0.005,ρ )
+1 1
+for the normal and abnormal regimes respectively, and once again we took Si = 100 for i = 1,2 and
+0
+k = 2. Formally, our regimes were JR = (Bull, Bull, Normal), and JR = (Bull, Bull, Abnormal)
+0 1
+and as in the fixed correlation experiments, approximately one quarter of the path, split equally to
+ten randomly generated points on the time axis, was generated using the JR parameter set with the
+1
+rest generated from the JR set.
+0
+We report the accuracy scores for ρ = (ρ ,ρ ) = (0,1) in exhibit 6 for a total of n = 50 runs. As
+0 1
+in the GBM case, both 2-d algorithms perform very well in picking up the regime changes.
+Algorithm Total Regime-on Regime-off
+2-d WK-means 95.72% ± 3.35% 92.02% ± 6.30% 96.73% ± 3.69%
+2-d MMDK-means 96.02% ± 2.87% 96.91% ± 2.11% 95.50% ± 3.26%
+Exhibit 6: Accuracy scores with 95% CI, MJD synthetic path with simultaneous correlation regimes
+and ρ =0, ρ =1, n=50 runs.
+0 1
+Exhibits 7(a) and 7(b) show our mean-variance plot for each asset, S and S . As we would
+1 2
+expect, there are no discernible clusters when plotting in mean-variance space due to the fixed mean-
+variance regime. In contrast, our correlation plots for each cluster’s log-returns in exhibit 7(d) and
+each centroid’s log-returns in 7(e) show that our algorithm has found clear relationships in the data.
+Thesecondcluster’slog-returnsandtheassociatedcentroid’satomsclearlyfallonthelinex=y while
+those of the first cluster are spread out evenly around the centre. Finally, exhibit 7(f) gives a visual
+demonstration of the strength of our algorithms in picking up changes in correlation through time.
+These results were similar but stronger in the GBM case.
+Having tested the case of ρ=(0,1), we then subsequently varied the values of ρ and ρ between
+0 1
+-1 and 1. Again, the results remain strong and are included for each supplementary test in appendix
+C.3.2. Taking ρ = (0.5,1) we observed similar results to the case of ρ = (0,1) for the 2-d WK-
+meansalgorithm. The2-d MMDK-meansalgorithm,however,showedamarkeddecreaseinregime-on
+accuracy score. We report the accuracy scores for each algorithm in exhibit 8 for a total of n = 50
+runs. Exhibit 9 includes the three plots associated with ρ=(0.5,1).
+Algorithm Total Regime-on Regime-off
+2-d WK-means 80.38% ± 5.94% 85.58% ± 7.41% 78.46% ± 7.50%
+2-d MMDK-means 78.04% ± 8.11% 68.17% ± 11.91% 81.14% ± 6.88%
+Exhibit 8: Accuracy scores with 95% CI, MJD synthetic path with simultaneous correlation regimes
+and ρ =0.5, ρ =1, n=50 runs.
+0 1
+10
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+(a) S1 mean-varianceclusteringplot. (b) S2 mean-varianceclusteringplot.
+(c) Clusters1and2log-returnsplotwith (d) Clusters1and2log-returnsplotwith
+clustercolours. clustercolours,magnified.
+(e) Centroids1and2log-returnsplotwith (f) Priceseriessegmentedbyclusteras-
+clustercolors. sociation.
+Exhibit 7: MJD with correlation regimes, ρ =0 and ρ =1, example mean-variance, correlation and
+0 1
+price series plots.
+11
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+(a) S1 mean-varianceclusteringplot. (b) S2 mean-varianceclusteringplot.
+(c) Clusters1and2log-returnsplotwith (d) Clusters1and2log-returnsplotwith
+clustercolours. clustercolours,magnified.
+(e) Centroids1and2log-returnsplotwith (f) Priceseriessegmentedbyclusteras-
+clustercolors. sociation.
+Exhibit 9: MJD with correlation regimes, ρ = 0.5 and ρ = 1, example mean-variance, correlation
+0 1
+and price series plots.
+4.1.3 Free correlation and mean-variance regime
+Finally, we tested the algorithms while varying the mean-variance regime and correlation regime. We
+tested four joint regimes: JR = (Bull, Bull, Normal), JR = (Bull, Bull, Abnormal), JR = (Bear,
+0 1 2
+Bear, Normal) and JR = (Bear, Bear, Abnormal). We generated paths for each asset using the
+3
+parameter sets
+θ =(0.05,0.05,0.2,0.2,5,0.02,0.02,0.005,0.005,0),
+0
+θ =(0.05,0.05,0.2,0.2,5,0.02,0.02,0.005,0.005,1),
+1
+θ =(−0.05,−0.05,0.35,0.35,10,−0.04,−0.04,0.04,0.04,0), and
+2
+θ =(−0.05,−0.05,0.35,0.35,10,−0.04,−0.04,0.04,0.04,1).
+3
+We took Si = 100 for i = 1,2. One eighth of the path was generated from each of the JR , JR
+0 1 2
+and JR parameter sets, each split randomly across 5 independent and non-overlapping periods, while
+3
+the other five eighths was generated using the JR parameter set. We ran the algorithms for k = 4
+0
+clusters. We report the accuracy scores for each algorithm in exhibit 10 for a total of n=50 runs.
+12
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+Algorithm Total Regime-on Regime-off
+2-d WK-means 68.25% ± 4.34% 53.94% ± 5.37% 76.63% ± 5.68%
+2-d MMDK-means 70.76% ± 5.12% 66.78% ± 5.20% 72.95% ± 6.26%
+Exhibit 10: Accuracy scores with 95% CI, MJD synthetic path, k = 4, with correlation and mean-
+variance regimes, n=50 runs.
+Algorithm Regime-on JR Regime-on JR Regime-on JR
+1 2 3
+2-d WK-means 48.52% ± 13.09% 47.11% ± 10.89% 66.18% ± 12.25%
+2-d MMDK-means 31.75% ± 12.38% 76.23% ± 9.89% 92.36% ± 2.83%
+Exhibit 11: Accuracy scores with 95% CI, MJD synthetic path, k =4, with correlation (JR ), mean-
+1
+variance (JR ) and joint correlation-mean-variance (JR ) regimes, n=50 runs.
+2 3
+The algorithms struggle to cluster for both regimes where one of the mean-variance or correlation
+regimechanges(JR andJR respectively)withquiteawideconfidenceintervalandlowscoreasseenin
+1 2
+exhibit11. However, boththe2-d WK-meansand2-d MMDK-meansalgorithmsarebetteratpicking
+up instances of simultaneous change in both the mean-variance and correlation regimes, returning
+accuracy scores of above 66% and 92% respectively for JR . The 2-d MMDK-means algorithm again
+3
+exceedsindetectingchangesinthemean-varianceregimeasseeninexhibit11butforbothalgorithms
+the overall accuracy scores remain low as seen in exhibit 10. Exhibits 12(a) and 12(b) are examples
+of our price series coloured according to cluster membership for two independent runs of the 2-d
+WK-means algorithm. The GBM experiments yielded analogous results.
+In exhibit 12(a) the algorithm has successfully identified the presence of certain changes in the
+market regimes but it struggles to disentangle them and assign them to independent clusters. 12(b)
+is similar but on this occasion the algorithm has identified each of the independent market regime
+changes.
+(a) Priceseriessegmentedbyclusteras- (b) Priceseriessegmentedbyclusteras-
+sociation,incorrectclustering. sociation,correctclustering.
+Exhibit 12: MJD price paths with mean-variance and correlation regimes segmented by cluster asso-
+ciation, ρ =0 and ρ =1, example plots.
+0 1
+5 Real data experiments
+Inthissectionweconsiderapplicationsofthe2-d algorithmstosetsofrealdatatakenfromsecuritiesin
+theS&P500. Welearnedinoursyntheticdataexperimentsthatthe2-d WK-meansand2-d MMDK-
+means algorithms are effective when clustering mean-variance regimes in the marginal distributions or
+when clustering correlation regimes between the assets. In such experiments, our algorithms return
+high regime-on and regime-off accuracy scores.
+However, the accuracy scores fall significantly when we attempt to cluster both mean-variance and
+correlation regimes in the same dataset as exhibited in exhibits 10 and 11. Thus should we apply
+the 2-d WK-means or 2-d MMDK-means algorithm to our real data directly, we likely will find the
+clustering to be weaker than we might otherwise desire.
+13
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+Therefore we propose a different approach. Instead of applying one of the 2-d algorithms alone,
+we make use of both the uni-d 1-WK-means algorithm and one of the 2-d algorithms in a best of
+both worlds approach. We begin by applying the uni-d 1-WK-means algorithm to the data in order
+to remove the effects of the marginal distribution on each asset and subsequently apply the 2-d WK-
+means or 2-d MMDK-means algorithm to this transformed data. This method is based on the theory
+of copulas.
+Definition 5.1 (Copula, [Skl59] (Definition 1, page 229)). Let X =(X ,...,X ) be a random vector
+1 d
+with joint CDF F and continuous marginal CDFs F ,...,F . Then we say that the copula of F (or X)
+1 d
+is the joint CDF C of the random vector (F (X ),...,F (X )) on [0,1]d.
+1 1 d d
+The copula of a random vector X captures the dependency structure between the marginals
+X ,...,X and thanks to Sklar’s theorem (D.1) we know that such a copula exists.
+1 d
+In our synthetic experiments we characterised changes in the joint regime between two assets
+by their respective marginal distribution’s changes in mean and variance, and their joint change in
+correlation. Correlationcantellushowcloselyrelatedourtwoassetsareinalinearsensebutthecopula
+structure is far richer, and it helps us model the inter-correlation dependence between assets. If we
+apply the marginal distribution to each respective asset then the joint distribution of our transformed
+datashouldbethecopulaaccordingtoSklar’stheorem. Moreover,thetransformeddataforeachasset
+should be uniform (D.2).
+Wenowhaveasetoftoolswithwhichtoapproachourrealdataclusteringproblem. Ourapproach
+when treating real data is laid out in the following steps.
+Step 1: Univariate clustering and data transformation
+We begin by establishing the marginal distributions of each asset using the uni-d WK-means
+algorithm. Inordertoestimatethenumberofclusterspresentinouruni-dimensionaldata,wepropose
+an approach based on the Kolmogorov-Smirnov test (D.3).
+We first assume that each asset has the minimum number of clusters possible, k = 2. If we have
+chosen the correct number of clusters for the given data then we would expect the uni-dimensional
+clustering, found using the uni-d 1-WK-means algorithm, to be effective. Furthermore, if we were
+to then apply the empirical cumulative distribution function of each cluster to its respective returns
+data, thenthetransformedreturnsdatashouldinfactbeuniform(D.2). Therefore, applicationofthe
+Kolmogorov-Smirnovtestatachosensignificancelevelshouldleadustonotrejectthenullhypothesis
+that our data is uniform. If the null hypothesis is in fact rejected, then subsequently we increase the
+numberofclustersk iteratively,untilthenullhypothesisisnotrejectedwhilstadjustingthesignificance
+level and p-value in line with the Bonferroni correction.
+Having established approximations to the marginal distributions for each asset, we then proceed
+to apply the empirical cumulative distribution function of our approximations to the data in their
+respective clusters. We now have a new dataset of transformed returns where each value falls within
+[0, 1] and should follow a uniform distribution.
+Step 2: Multivariate clustering
+The joint distribution of our newly transformed dataset should be the copula of the original data,
+and so we apply the 2-d WK-means or 2-d MMDK-means algorithm to our transformed data in order
+to obtain correlation regimes.
+5.1 Synthetic data experiments revisited
+In order to validate our approach, we will briefly return to our previous synthetic data experiments,
+specifically to that of the free correlation and mean-variance regime clustering problems introduced in
+section 4.1.3.
+Step 1: Univariate clustering
+Wefirstclustereachofourtwoassetsusingtheuni-d 1-WK-meansalgorithmwherewetakek =2.
+The accuracy scores are summarised in exhibit 13. Exhibit 15 shows the associated color plots.
+14
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+Algorithm Asset Total Regime-on Regime-off
+Uni-d 1-WK-means 1 97.71% 97.30% 97.62%
+Uni-d 1-WK-means 2 97.14% 97.59% 96.77%
+Exhibit13: Accuracyscoresofuni-d 1-WK-meansappliedtoMJDsyntheticpathswithmean-variance
+and correlation regimes, ρ =0 and ρ =1.
+0 1
+We now apply the empirical cumulative distribution function of each cluster to their respective
+cluster of log-returns. Conducting the Kolmogorov-Smirnov test on each asset’s transformed returns
+yieldsp-valuesof1.000and1.000respectively. Inthisinstancewehavetheadvantageofforesightand
+hence we know that k =2 is the correct number of clusters.
+Step 2: Multivariate clustering
+Finally, we apply the 2-d WK-means and 2-d MMDK-means algorithms to the transformed data
+and display the accuracy scores in exhibit 14
+Algorithm Total Regime-on Regime-off
+2-d WK-means 99.46% ± 0.00% 98.69% ± 0.00% 99.49% ± 0.00%
+2-d MMDK-means 99.42% ± 0.00% 99.44% ± 0.00% 99.18% ± 0.00%
+Exhibit14: Accuracyscoresof2-d WK-meansand2-d MMDK-meansappliedtoMJDsyntheticpaths
+with mean-variance and correlation regimes, ρ =0 and ρ =1, n=50 runs.
+0 1
+Clearly, when compared to our original results in exhibit 11, we have a substantial improvement
+in our regime accuracy scores and similar results were found for the GBM case (D.1). Exhibit 15
+displays the associated price series colored according to cluster association. Exhibits 15(c) and 15(d)
+show the colored price series for assets 1 and 2 respectively with periods of mean-variance regime
+change highlighted in red. Similarly, exhibit 15(e) shows both segmented time series with periods of
+correlation regime change highlighted.
+Wealsointroducetwonewplotsinexhibits15(a)and15(b)thatwemayusetoanalyseourresults.
+Exhibit 15(a) shows the correlation between the two assets over a rolling window of h = 35 market
+1
+hours. Each point is then assigned a color based on the cluster association of the returns it is formed
+from. Itisnoticeablethatthoseperiodsofhighrollingcorrelationaremostcommonlyassociatedwith
+cluster 2, which is colored red, as we would expect. All other points are colored green indicating that
+their associated returns belong to cluster 1.
+Exhibit15(b)showsthecorrelationofeachoftheempiricalmeasuresformedfromourtransformed
+returns data, using the empirical distribution of the associated cluster, and colored according to their
+clusterassociation. Wenotethatperiodsofincreasingcorrelationintheempiricalmeasuresarecolored
+red while periods of decreasing or relatively stationary correlation are colored green. This is in line
+with what we might expect and further supports our claim that the 2-d WK-means algorithm has
+effectively clustered the empirical measures into their correct correlation regimes. These plots are
+reassuring when viewed in the context of our synthetic examples but they will become much more
+useful when we identify the correlation regimes present in real data which we do not know a priori.
+5.2 Real data
+Now that we have validated our approach on our synthetic examples, we proceed to treat real world
+cases. At this point we diverge slightly from our previous experiments and for simplicity we use only
+the 2-d WK-means algorithm going forward.
+Foreachassetwetake(h ,h )=(35,28)fortheunivariateclusteringinlinewith[HIM21]. Choos-
+1 2
+ing values of h and h when using the 2-d clustering algorithm can often be more of an art than a
+1 2
+science. The copula structure, and in particular the correlation, between different assets may change
+with different levels of frequency and over different lengths of time which in turn may justify different
+values of (h ,h ) depending on the pair of assets. Although we do not know the true underlying
+1 2
+probability distributions which exist in our real data, we can attempt to test how stable the inferred
+correlation regimes are for different hyperparameter choices (h ,h ). Having tested the stability of a
+1 2
+variety of pairs of (h ,h ) for each pair of assets, we took the optimal pairing and discuss the results
+1 2
+in the following subsections.
+15
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+(a) Correlation between assets 1 and 2 (b) Correlation of each empirical mea-
+over a rolling window, coloured accord- sure, coloured according to cluster des-
+ingtoclusterdesignation. ignation.
+(c) S1 price series segmented by mean- (d) S2 price series segmented by mean-
+varianceregimeclusterassociation. varianceregimeclusterassociation.
+(e) S1 andS2 priceseriessegmentedby
+correlationregimeclusterassociation.
+Exhibit 15: Merton jump diffusion assets 1 and 2 correlation and price series segmented by cluster
+association.
+16
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+5.2.1 AAPL - AMZN
+The first pair of test assets is Apple Inc (AAPL) and Amazon Inc (AMZN). We use the hourly close
+prices for each stock from 2005-2023. The correlation of these assets over the entire testing period
+is 0.433 while the standard deviation of their rolling correlation using a window of h = 35 hours is
+1
+28.68%. Exhibit 16(a) shows the price series evolution of AAPL and AMZN stock between 2005 and
+2023whileexhibit16(b)showstherollingcorrelationoverawindowof35markethoursbetweenthese
+two assets during that time.
+(a) AAPL and AMZN price series 2005 (b) AAPLandAMZNrollingcorrelation
+-2023. of returns plot using a rolling window of
+35markethours.
+Exhibit 16: Price series and rolling correlation plots of AAPL and AMZN.
+Step 1: Univariate clustering and data transformation
+We initially cluster the empirical measures of each of our two assets using the uni-d 1-WK-means
+algorithm. We find that AAPL requires 3 clusters while AMZN needs 4.
+Exhibits 17(a) and 17(b) show the mean-variance clustering plots of each asset. AAPL seems to
+exhibit three mean-variance regimes of increasing variance; a low variance regime (green), a medium
+varianceregime(blue)andahighvarianceregime(red). AMZNalsoexhibitsthreeregimesofincreasing
+variance, however its medium variance regime is further split into two regimes of high (orange) and
+low (blue) means.
+(a) AAPLmean-varianceclusteringplot. (b) AMZNmean-varianceclusteringplot.
+Exhibit 17: Uni-d 1-WK-means applied to AAPL and AMZN mean-variance clustering plots.
+Step 2: Multivariate clustering
+Now that we have removed the influence of the marginal distributions on the data, we apply the
+2-d WK-means algorithm. We take (h ,h ) = (140,133) and as an input to our algorithm, we must
+1 2
+decideonthenumberofclustersk wewillrunouralgorithmfor. Thesimplestpossiblechoiceisk =2.
+These would represent one regime of higher correlation and one of a lower correlation.
+Indeed, for k =2, we obtain one correlation regime of high correlation where the correlation of the
+centroid’s atoms is 0.738 and one of a lower correlation, where the correlation of the centroid’s atoms
+is0.373. Exhibit18(a)showstherollingcorrelationplotwithclustercolors. Weseefromtheplotthat
+17
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+the second (red) cluster has caught instances of higher correlation above the average line, represented
+by the black horizontal line, while the first (green) cluster tends to fall below this line indicating that
+it captures periods of lower correlation.
+Exhibit 18(b) shows the correlation of each of the transformed empirical measures that we have
+clusteredwiththeirassociatedclustercolors. Muchlikeoursyntheticexampleplotinexhibit15(b),we
+notethatwherethecorrelationisincreasingthesecond(red)clustertendstodominatewhilewherethe
+correlationisdecreasing,thefirst(green)clusterismoreapparent. Thesetrendsarefurtherreinforced
+in exhibits 18(c) and 18(d) which show a portion of figure 18(b) magnified and where only one cluster
+is presented.
+(a) AAPL and AMZN rolling correla- (b) AAPL and AMZN empirical measures
+tion plot with cluster colors, (h1,h2) = correlationplotwithclustercolors,(h1,h2)=
+(140,133). (140,133).
+(c) AAPL and AMZN empirical mea- (d) AAPL and AMZN empirical mea-
+sures correlation plot with cluster colors, sures correlation plot with cluster colors,
+(h1,h2)=(140,133)cluster1only. (h1,h2)=(140,133)cluster2only.
+Exhibit 18: Correlation plots of AAPL and AMZN for 2 clusters, (h ,h )=(140,133).
+1 2
+5.2.2 AVB - ESS
+AVB and ESS constitute our second test pairing. These stocks represent AvalonBay Communities
+Inc (AVB) and Essex Property Trust Inc (ESS), both of which are real estate companies and thus we
+would expect them to be highly correlated. Indeed, using the hourly close prices for each stock from
+2009-2023, the correlation of these assets over the entire testing period is 0.835 while the standard
+deviation of their rolling correlation using a window of h = 35 market hours is 13.96%. This is a
+1
+noticeably lower variation in the rolling correlation than that of AAPL-AMZN. Exhibit 19(a) shows
+the price series evolution of AVB and ESS stock between 2009 and 2023 while exhibit 19(b) shows the
+rolling correlation over a window of 35 market hours between these two assets during that time.
+18
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+(a) AVB and ESS price series 2009 - (b) AVB and ESS rolling correlation of
+2023. returnsplotusingarollingwindowof35
+markethours.
+Exhibit 19: Price series and rolling correlation plots of AVB and ESS.
+Step 1: Univariate clustering and data transformation
+We initially cluster the empirical measures of each of the two assets using the uni-d 1-WK-means
+algorithm. After testing, we find that in the case of AVB and ESS, we require 6 and 4 clusters
+respectively. Exhibits 20(a) and 20(b) show the mean-variance clustering plots of each asset.
+(a) AVBmean-varianceclusteringplot. (b) ESSmean-varianceclusteringplot.
+Exhibit 20: Uni-d 1-WK-means applied to AVB and ESS mean-variance clustering plots.
+Step 2: Multivariate clustering
+For the 2-d clustering, we take (h ,h ) = (210,203). Upon inspection of the rolling correlation
+1 2
+graph in 19(b), although there are notable downward spikes in correlation at times, the rolling cor-
+relation tends to be quite steady. It therefore seems reasonable to take k = 2 clusters for our 2-d
+WK-means algorithm. These clusters should represent one regime of higher correlation and one of a
+lower correlation.
+Indeed, for k = 2, we obtain one correlation regime of high correlation, where the correlation of
+the centroid’s atoms is 0.878, and one of a lower correlation, where the correlation of the centroid’s
+atoms is 0.737. Exhibit 21(a) shows the rolling correlation plot with cluster colors. Overall we see
+fromtheplotthatthesecond(red)clusterhascaughtinstancesofhighercorrelationabovetheaverage
+line, represented by the black horizontal line, while the first (green) cluster tends to fall below this
+line indicating that it captures periods of lower correlation. It is noticeable however that the trends
+are less distinct than that of the AAPL-AMZN case. This is to be expected due to the much higher
+correlation between the two assets.
+Exhibit 21(b) shows the correlation of each of the empirical measures that we have clustered with
+theirassociatedclustercolors. Wenotethatwherethecorrelationisincreasingthesecond(red)cluster
+tends to dominate while where the correlation is decreasing, the first (green) cluster is more apparent.
+These trends are further reinforced in exhibits 21(c) and 21(d) which show a portion of figure 21(b)
+magnified and where only one cluster is presented.
+19
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+(a) AVB and ESS rolling correlation (b) AVB and ESS empirical measures cor-
+plot with cluster colors, (h1,h2) = relation plot with cluster colors, (h1,h2) =
+(210,203). (210,203).
+(c) AVB and ESS empirical measures (d) AVB and ESS empirical measures
+correlation plot with cluster colors, correlation plot with cluster colors,
+(h1,h2)=(210,203)cluster1only. (h1,h2)=(210,203)cluster2only.
+Exhibit 21: Correlation plots of AVB and ESS for 2 clusters, (h ,h )=(210,203).
+1 2
+5.2.3 SJM - PAYC
+Finally, SJM and PAYC constitute our last test pairing. J.M. Smucker Co (SJM) is a food and
+beverage manufacturing company while Paycom Software Inc (PAYC) is an online payroll and human
+resource technology provider. As one might suspect, the price series of the associated stocks tend to
+have low correlation on average. Indeed, using the hourly close prices for each stock from 2015-2023,
+the correlation of these assets over the entire testing period is 0.060 while the standard deviation of
+their rolling correlation using a window of h = 35 market hours is 29.25%. Exhibit 22(a) shows the
+1
+price series evolution of SJM and PAYC stock between 2015 and 2023 while exhibit 22(b) shows the
+rolling correlation over a window of 35 market hours between these two assets during that time.
+(a) SJM and PAYC price series 2015 - (b) SJMandPAYCrollingcorrelationof
+2023. returnsplotusingarollingwindowof35
+markethours.
+Exhibit 22: Price series and rolling correlation plots of SJM and PAYC.
+20
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+Step 1: Univariate clustering and data transformation
+We initially cluster the empirical measures of each of the two assets using the uni-d 1-WK-means
+algorithm. After testing, we find that in the case of SJM and PAYC, we require 3 and 4 clusters
+respectively. Exhibits 23(a) and 23(b) show the mean-variance clustering plots of each asset.
+(a) SJMmean-varianceclusteringplot. (b) PAYCmean-varianceclusteringplot.
+Exhibit 23: Uni-d 1-WK-means applied to SJM and PAYC mean-variance clustering plots.
+Step 2: Multivariate clustering
+For the 2-d clustering, we take (h ,h ) = (140,133). We stick to the simplest approach possible
+1 2
+and take k = 2 in the 2-d WK-means algorithm. The clusters should represent one regime of higher
+correlation,andoneregimeofalowercorrelation. Indeed,fork =2weobtainonecorrelationregimeof
+high correlation, where the correlation of the centroid’s atoms is 0.268, and one of a lower correlation,
+wherethecorrelationofthecentroid’satomsis-0.059. Exhibit24(a)showstherollingcorrelationplot
+with cluster colors. We see from the plot that the second (red) cluster has caught instances of higher
+correlation above the average line, represented by the black horizontal line, while the first (green)
+cluster tends to fall below this line indicating that it captures periods of lower correlation.
+Exhibit 24(b) shows the correlation of each of the empirical measures that we have clustered with
+their associated cluster colors. We note that as we might expect, the second (red) and first (green)
+clusters tend to pick up instances of stronger and weaker correlation respectively. These trends are
+further reinforced in exhibits 24(c), and 24(d) which show a portion of exhibit 24(b) magnified and
+where only one cluster is presented.
+6 Trading strategy
+Inthissection,weuseournewtwo-stepclustering-basedapproachtofacilitateatradingstrategy. Our
+candidateassetswillbethethreepairsofstocksdescribedinsection5andtheoveralltradingstrategy
+is based on Modern Portfolio Theory (MPT) as described in appendix E.
+The Modern Portfolio Theory approach requires four variables: approximations of the expected
+returns µ, the variance σ2, and the correlation ρ of the assets in our portfolio, and a target return µ .
+t
+In using our two-step method with the uni-d 1-WK-means and 2-d WK-means algorithms we cluster
+boththemarginalandjointdistributionsintodistinctclusters. Theseclusterseachhaveanassociated
+centroid which should act as an average of that cluster’s constituent data.
+When we cluster with the uni-d 1-WK-means algorithm, our synthetic and real data experiments
+wouldleadustoexpectthemeanandvarianceofeachcluster’scentroid’satomstobearepresentation
+of the returns data in its cluster. Similarly, when clustering with the 2-d WK-means algorithm we
+would expect the correlation of the centroid’s atoms to be representative of the returns data in its
+cluster. Thereforeourtwo-stepapproachlendsitselfnicelytothemean-varianceoptimisationproblem
+where we may use each cluster’s centroid’s mean, variance and correlation values as approximations
+to the true values in our calculations.
+The following experiment demonstrates the benefits of knowing the correct clustering for each pair
+ofassetsandeachnewmeasureformedfromthereturnspath. Forthepurposesofthisexperiment,we
+assume that we have perfect foresight of the returns path of each asset and thus know which cluster
+each newly formed measure should be associated with.
+21
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+(a) SJM and PAYC rolling correlation (b) SJM and PAYC empirical mea-
+plot with cluster colors, (h1,h2) = sures correlation plot with cluster colors,
+(140,133). (h1,h2)=(140,133).
+(c) SJM and PAYC empirical mea- (d) SJM and PAYC empirical mea-
+surescorrelationplotwithclustercolors, surescorrelationplotwithclustercolors,
+(h1,h2)=(140,133)cluster1only. (h1,h2)=(140,133)cluster2only.
+Exhibit 24: Correlation plots of SJM and PAYC for 2 clusters, (h ,h )=(140,133).
+1 2
+Formally,weapplythetwo-stepapproachtothethreepairsofassetsAAPL-AMZN,AVB-ESS,and
+SJM-PAYCfortheperiods2005-2022,2009-2022and2015-2022respectively. Weassumethatwewant
+to trade over a specific window and take h = 35, equivalent to one market week in market hours,
+1
+and h = 28 for both the uni-d 1-WK-means and 2-d WK-means algorithms. Each return is then
+2
+associated with the first empirical measure it is included within and thus we approximate its mean,
+variance and correlation using the atoms of the centroid of the cluster associated to that measure. We
+form our mean-variance portfolios using these approximations and refer to this as the Cluster Based
+(CB)portfolio. Inordertobenchmarkourstrategy, weprovideanalternativeportfoliowherewehave
+used the average over a rolling window of 35 returns as an approximation to the mean, variance and
+correlation of each asset. We refer to this portfolio as the Rolling Average (RA) portfolio.
+Eachportfoliostartswithavalueofoneandeachtradingperiodisonemarkethour. Theportfolio
+cumulative returns are shown in exhibit 25 for a few chosen values of µ . We see that the choice of
+t
+µ does have an impact on the returns generated by the CB strategy but in all cases we generate a
+t
+positive return. Exhibit 29 shows the performance of each pair when using its optimal target return
+tested. That is to say, our target return µ for the pairings in each respective period is 0.1%, 0.05%
+t
+and 0.15% for AAPL-AMZN, AVB-ESS, and SJM-PAYC respectively.
+Exhibits 26, 27 and 28 show statistics for the CB and RA strategies when trading each asset pair
+under its optimal target return. Statistics provided include the cumulative return of each portfolio,
+calculated as the cumulative product of returns over the testing period when starting from a portfolio
+value of 1 and the classic annualised Sharpe ratio. We also provide the maximum drawdown of each
+strategy during this period, defined as being the largest drop from a peak in our cumulative returns
+to a subsequent trough, as well as the hourly standard deviation in returns σ . The results generated
+h
+use the hourly closing prices of each asset and do not account for market intricacies such as trading
+fees, bid-ask spread, shorting constraints etc.
+22
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+µ
+t 0.05% 0.10% 0.15%
+Pair
+AAPL-AMZN 6401.37 133,781.43 8225.44
+AVB-ESS 41.03 5.53 3.16
+SJM-PAYC 30.55 268.39 979.85
+Exhibit 25: Cluster Based strategy cumulative returns for µ =0.05%,0.10%,0.15%.
+t
+Strategy Cumulative returns Sharpe ratio Max drawdown σ
+h
+CB 133,781.43 3.03 25.55% 0.55%
+RA 5.40 0.46 51.45% 0.13%
+Exhibit 26: Cluster Based (CB) vs Rolling Average (RA) strategy statistics for AAPL-AMZN.
+Strategy Cumulative returns Sharpe ratio Max drawdown σ
+h
+CB 41.03 1.80 23.28% 0.37%
+RA 0.92 -0.13 45.39% 0.33%
+Exhibit 27: Cluster Based (CB) vs Rolling Average (RA) strategy statistics for AVB-ESS.
+Strategy Cumulative returns Sharpe ratio Max drawdown σ
+h
+CB 979.85 3.62 16.97% 0.65%
+RA 2.05 0.45 28.49% 0.60%
+Exhibit 28: Cluster Based (CB) vs Rolling Average (RA) strategy statistics for SJM-PAYC.
+7 Conclusion
+In this paper, we have shown that the p-Wasserstein distance and Maximum Mean Discrepancy can
+be combined with the k-means clustering algorithm in order to effectively partition multidimensional
+marketreturnsintoregimes. Theseregimesincludeperiodscharacterisedbyachangeinthemeanand
+varianceoftheunderlyingdistributionandperiodscharacterisedbyachangeinthecorrelationbetween
+twoassets. Wecomparedtheuseofeachdistancemetricinsyntheticsettingsandfoundthatwhilethe
+p-Wasserstein distance led to stronger clustering for correlation regimes, the MMD was more effective
+when clustering regimes characterised by their mean and variance changes. We then demonstrated
+how combining the WK-means algorithm, as described in [HIM21], with our novel multidimensional
+algorithmscanbeeffectiveinclusteringrealworldmarketreturns. Finally, weshowedthatknowledge
+of the cluster membership of each market return can be effective in building a profitable portfolio.
+Areas ripe for further investigation are plentiful. In particular, a method for predicting the next
+cluster, possibly based on the overlapping returns or some form of traditional time series prediction,
+is key as naively assuming the next measure belongs to the same cluster as the current measure yields
+positive, but weaker results. It would also be interesting to investigate the application of mixture
+distributions in this context, wherein we would use a mixture of the centroid empirical distributions
+as opposed to only one when trading a given period of returns.
+23
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+(a) AAPL - AMZN performance for the (b) AAPL - AMZN performance for
+ClusterBasedportfolio. theRollingAverageportfolio.
+(c) AVB - ESS performance for the (d) AVB - ESS performance for the
+ClusterBasedportfolio. RollingAverageportfolio.
+(e) SJM - PAYC performance for the (f) SJM - PAYC performance for the
+ClusterBasedportfolio. RollingAverageportfolio.
+Exhibit 29: Cluster Based and Rolling Average portfolios.
+24
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+A Technical Proofs and further results
+B Appendix 1
+In this appendix we provide statements and proofs related to results in section 2 of the paper.
+B.1 The k-means clustering algorithm
+Definition B.1 (Stream lift, [BKL+19] (Section 3.3, page 5)). Let S(Rd) be a space of streams over
+the Rd and let m≥ 1. We call a function
+ℓ=(ℓ1,...,ℓm):S(Rd)→S(S(Rd))
+a lift from the space of streams to the space of streams of segments over Rd.
+Definition B.2 (Within-cluster variation, [HIM21] (Definition A.2, page 29)). Let k ∈ N and let
+X ∈S(V) be a stream of data over a normed vector space V. Suppose C ⊂C(X) are disjoint clusters
+over X. Associate to each C its centroid x¯ for j = 1,...,k. Then, for a given C , the within-cluster
+j j j
+variation is defined as
+(cid:88)
+WC(C ):= ∥x−x¯ ∥2,
+j j V
+x∈Cj
+for j =1,...,k.
+Definition B.3 (Total-cluster variation, [HIM21] (Definition A.3, page 29)). With the notation of
+definition B.2, define
+k
+(cid:88)
+TC(C):= WC(C )
+j
+j=1
+to be the total-cluster variation corresponding to a clustering C ∈ C(X) on the normed vector space
+(V,∥·∥ ).
+V
+Definition B.4 (k-means stopping rule, [HIM21] (Definition A.4, page 30)). Suppose (V,∥·∥ ) is a
+V
+normed vector space. For fixed k ∈N, consider a loss function l:Vk×Vk →R given by
++
+k
+(cid:88)
+l(x,y):= ∥x −y ∥ .
+i i V
+i=1
+For a tolerance level ϵ>0, the stopping rule corresponding to the k-means algorithm is given by
+l(x¯n−1,x¯n)<ϵ,
+where n∈N denotes the step of the algorithm, V =Rd for d∈Z and x¯n is the collection of centroids
++
+at the nth step of the algorithm.
+B.2 p-Wasserstein distance
+Definition B.5 (Multidimensionalp-Wassersteindistance,[AGS05](Equation7.1.1,page151)). Sup-
+pose (X,D) is a separable Radon space and that P (X) is the set of probability measures on X with
+p
+finite pth moment. The pth Wasserstein distance between measures µ, ν ∈ P (X) is defined by
+p
+(cid:18) (cid:26)(cid:90) (cid:27)(cid:19)1
+p
+W (µ,ν):= min D(x,y)pP(dx,dy) ,
+p
+P∈Π(µ,ν)
+X×X
+where
+Π(µ,ν):={P∈P(X×X):P(A×X)=µ(A),P(X×B)=ν(B)}
+is the set of transport plans between µ and ν.
+25
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+Definition B.6 (Wasserstein barycentre, [HIM21] (Definition 2.3, page 9)). Suppose (X,D) is a
+separableRadonspaceandletK={µ } ⊂P (X)beafamilyofRadonmeasures. Thep-Wasserstein
+i i≥1 p
+barycentre between measures µ¯ of K is defined to be
+(cid:88)
+µ¯ :=argmin W (µ ,ν).
+p i
+ν∈Pp(X)
+µi∈K
+Proposition B.7 (The p-Wasserstein distance is a metric, [Tho19] (Chapter 5.1, proposition 5.4)).
+The distance W :P (X)×P (X)→[0,∞) is a metric on P (X).
+p p p p
+Proof. Asin[Tho19],weshowthatthefirstthreecriteriaofbeingametricaremet. Thefinalcriterion,
+the triangle inequality, can be shown using the ‘gluing lemma’ as described in [Tho19] chapter 5.1,
+proposition 5.4. We note that by definition W (µ,ν) ≥ 0 for any µ,ν ∈ P (X), giving us the first
+p p
+requirement. Furthermore, since D(x,y) is itself a metric, we must have that it is symmetrical and
+since P ∈ Π(µ,ν) if and only if S#P ∈ Π(µ,ν) where S(x,y) = (y,x) we have that W (µ,ν) is
+p
+symmetrical.
+Finally, if µ=ν then we may take P(x,y)=δ (y)µ(x) such that
+x
+(cid:90)
+W (µ,ν)≤ D(x,y)pP(dx,dy)=0,
+p
+X×X
+as x = y P-almost everywhere. Suppose we have that W (µ,ν) = 0. Then there must exist some
+p
+P∈Π(µ,ν) such that x=y P-almost everywhere. Hence for any function f :X→R,
+(cid:90) (cid:90) (cid:90) (cid:90)
+f(x)µ(dx)= f(x)P(dx,dy)= f(y)P(dx,dy)= f(y)ν(dy).
+X X×X X×X X
+Since this holds for all f we have that µ=ν.
+Remark B.8. The p-Wasserstein distance, defined in definition B.5, is in fact a special case of an
+integral probability metric via its dual formulation. As shown in [GWX21], where p = 1, the dual
+formulation is given by
+(cid:32) (cid:33)
+(cid:90) (cid:90)
+W (µ,ν)= sup f(x)dµ(x)− f(y)dν(y) , (2)
+1
+f∈Lip (X) X X
+1
+where Lip (X) denotes a collection of Lipschitz functions with Lipschitz constant 1
+1
+Lip :={f :∥f∥ ≤1},
+1 Lip
+and where
+|f(x)−f(y)|
+∥f∥ := sup .
+Lip D(x,y)
+x∈supp(µ),y∈supp(ν),x̸=y
+Since µ and ν are probability measures we may write equation (2) as
+W (µ,ν)= sup(E [f(x)]−E [f(y)]).
+1 µ ν
+Lip
+1
+Therefore the 1-Wasserstein distance is an integrable probability metric over F given by the unit ball
+in the space of functions
+Lip(X)={f :X →R:f continuous, ∥f∥ <∞},
+Lip
+and it shares a relationship with the Maximum Mean Discrepancy.
+Proposition B.9 (Weak convergence of p-Wasserstein distance, [ABH+12] (Chapters 2 & 3, pages 1
+- 155)). A sequence (µ ) ⊂ P (X) converges weakly to µ ∈ P (X) if and only if W (µ ,µ) → 0 as
+i ≥1 p p p i
+n→∞.
+Proof. See Chapters 2 & 3, pages 1 - 155 in [ABH+12].
+26
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+B.3 Maximum Mean Discrepancy
+Problem 1 (Two-sampletest,[BGR+12](Problem1)). Let (X,D) be a metric space. Suppose X and
+Y are independent random variables on X. Suppose that the Borel probability measure of X is µ and
+that of Y is ν, where µ,ν ∈ P(X), where P(X) is the set of probability measures on X. If we draw
+i.i.d. samples x = (x ,...,x ) and y = (y ,...,y ) where x ∼ µ for i = 1,...,n and y ∼ ν for
+1 n 1 m i j
+j = 1,...,m, when can we determine if µ ̸= ν? In other words, we wish to implement a test for the
+two-sample problem
+H :µ=ν H :µ̸=ν.
+0 1
+Definition B.10 (Hilbert space, [Fol99] (Pages 171 - 172)). A Hilbert space H is a complex vector
+space equipped with an inner product, that is complete with respect to the norm induced by its inner
+product.
+Definition B.11 (Kernel function, [SS05] (Equation 3, page 3). Let X be a topological space. We
+define a symmetric, similarity measure of the form
+κ:X ×X →R
+(x,x′)→κ(x,x′),
+such that κ returns a real number characterising the similarity between x and x′. We refer to κ as a
+kernel function or method.
+Definition B.12 (UniversalreproducingkernelHilbertspace,[BGR+12](Section2.2,page727)). Let
+X be a topological space, H be a Hilbert space and κ : X ×X → R be a reproducing kernel. We say
+that the reproducing kernel Hilbert space (H,κ) is universal if κ(·,·) is continuous and H is dense in
+C(X), the space of bounded, continuous functions on X, with respect to the L norm.
+∞
+Definition B.13 (Characteristic kernel, [FGSS08] (Section 2)). Let X be a non-empty set. A kernel
+κ on X is called characteristic if the mean mapping
+µ→E [κ(·,X)]
+X∼µ
+is injective.
+Lemma B.14 (Unbiased empirical estimate of the squared MMD, [BGR+12] (Lemma 6, page 728)).
+Using the notation of 2.2, let x and x′ be samples of X with distribution µ, and y and y′ be samples of
+Y with distribution ν. The squared MMD is given by
+MMD2[F,µ,ν]=E [κ(x,x′)]−2E[κ(x,y)]+E [κ(y,y′)],
+x,x′ y,y′
+wherex′ and y′ areindependentcopiesof x and y respectively. Anunbiasedempiricalestimateisgiven
+by
+m m n n m n
+1 (cid:88)(cid:88) 1 (cid:88)(cid:88) 2 (cid:88)(cid:88)
+MMD2[F,X,Y]= κ(x ,x )+ κ(y ,y )− κ(x ,y ).
+u m(m−1) i j n(n−1) i j mn i j
+i=1 j̸=i i=1 j̸=i i=1j=1
+C Appendix 3
+In this appendix we provide further results related to the synthetic experiments in section 4 of the
+paper. We also provide a derivation of the correlated Merton jump diffusion processes used in section
+4.1.
+27
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+C.1 Geometric Brownian motion
+C.1.1 Fixed correlation regime results
+Algorithm Total Regime-on Regime-off
+2-d WK-means 85.61% ± 3.54% 87.11% ± 2.78% 85.12% ± 4.42%
+Uni-d 1-WK-means 86.46% ± 4.04% 89.45% ± 2.64% 85.26% ± 4.82%
+Uni-d 2-WK-means 94.28% ± 1.82% 86.78% ± 2.34% 96.55% ± 1.87%
+2-d MMDK-means 77.57% ± 4.10% 81.59% ± 3.86% 76.05% ± 5.62%
+Exhibit 30: Accuracy scores with 95% CI, GBM synthetic path with simultaneous mean-variance
+regimes and fixed ρ=1, n=50 runs.
+C.1.2 Further fixed correlation regime results
+Algorithm Total Regime-on Regime-off
+2-d WK-means 84.36% ± 4.19% 86.52% ± 4.35% 83.45% ± 4.65%
+Uni-d 1-WK-means 86.37% ± 3.90% 89.50% ± 3.10% 85.13% ± 4.68%
+Uni-d 2-WK-means 94.94% ± 1.55% 89.82% ± 1.21% 96.43% ± 1.66%
+2-d MMDK-means 84.63% ± 4.21% 86.57% ± 5.22% 83.78% ± 4.57%
+Exhibit 31: Accuracy scores with 95% CI, GBM synthetic path with simultaneous mean-variance
+regimes and fixed ρ=0, n=50 runs.
+Algorithm Total Regime-on Regime-off
+2-d WK-means 88.12% ± 4.48% 83.53% ± 3.88% 89.44% ± 4.96%
+2-d MMDK-means 95.02% ± 1.70% 95.31% ± 0.35% 94.70% ± 2.32%
+Exhibit 32: Accuracy scores with 95% CI, GBM synthetic path with simultaneous mean-variance
+regimes and fixed ρ=0.5, n=50 runs.
+Algorithm Total Regime-on Regime-off
+2-d WK-means 82.52% ± 4.21% 87.99% ± 3.11% 80.51% ± 4.99%
+2-d MMDK-means 77.17% ± 5.43% 85.42% ± 6.27% 74.24% ± 5.84%
+Exhibit 33: Accuracy scores with 95% CI, GBM synthetic path with simultaneous mean-variance
+regimes and fixed ρ=−0.5, n=50 runs.
+Algorithm Total Regime-on Regime-off
+2-d WK-means 85.89% ± 4.25% 86.25% ± 2.68% 85.57% ± 5.09%
+2-d MMDK-means 74.85% ± 3.69% 87.23% ± 2.91% 70.55% ± 4.32%
+Exhibit 34: Accuracy scores with 95% CI, GBM synthetic path with simultaneous mean-variance
+regimes and fixed ρ=−1, n=50 runs.
+C.1.3 Fixed mean-variance regime results
+Algorithm Total Regime-on Regime-off
+2-d WK-means 92.71% ± 4.72% 98.98% ± 0.14% 90.40% ± 6.29%
+2-d MMDK-means 99.46% ± 3.76% 99.20% ± 0.00% 99.32% ± 0.00%
+Exhibit 35: Accuracy scores with 95% CI, GBM synthetic path with simultaneous correlation regimes
+and ρ =0, ρ =1, n=50 runs.
+0 1
+28
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+Algorithm Total Regime-on Regime-off
+2-d WK-means 87.78% ± 5.21% 91.85% ± 4.76% 86.22% ± 6.09%
+2-d MMDK-means 97.41% ± 2.78% 96.56% ± 3.22% 97.33% ± 2.81%
+Exhibit 36: Accuracy scores with 95% CI, GBM synthetic path with simultaneous correlation regimes
+and ρ =0.5, ρ =1, n=50 runs.
+0 1
+C.1.4 Further fixed mean-variance regime results
+Algorithm Total Regime-on Regime-off
+2-d WK-means 82.28% ± 6.78% 84.07% ± 8.43% 81.49% ± 7.01%
+2-d MMDK-means 88.32% ± 5.55% 84.42% ± 7.84% 89.41% ± 5.23%
+Exhibit 37: Accuracy scores with 95% CI, GBM synthetic path with simultaneous correlation regimes
+and ρ =1, ρ =0, n=50 runs.
+0 1
+Algorithm Total Regime-on Regime-off
+2-d WK-means 98.60% ± 1.69% 97.83% ± 1.93% 98.63% ± 1.60%
+2-d MMDK-means 95.03% ± 4.20% 95.18% ± 3.80% 94.76% ± 4.32%
+Exhibit 38: Accuracy scores with 95% CI, GBM synthetic path with simultaneous correlation regimes
+and ρ =0, ρ =−1, n=50 runs.
+0 1
+Algorithm Total Regime-on Regime-off
+2-d WK-means 85.21% ± 6.00% 91.17% ± 5.31% 83.02% ± 6.82%
+2-d MMDK-means 80.01% ± 6.67% 83.91% ± 5.63% 78.52% ± 7.26%
+Exhibit 39: Accuracy scores with 95% CI, GBM synthetic path with simultaneous correlation regimes
+and ρ =−1, ρ =0, n=50 runs.
+0 1
+Algorithm Total Regime-on Regime-off
+2-d WK-means 94.70% ± 3.84% 95.92% ± 3.23% 94.08% ± 4.47%
+2-d MMDK-means 89.49% ± 5.59% 91.55% ± 4.94% 88.59% ± 6.03%
+Exhibit 40: Accuracy scores with 95% CI, GBM synthetic path with simultaneous correlation regimes
+and ρ =−0.5, ρ =−1, n=50 runs.
+0 1
+Algorithm Total Regime-on Regime-off
+2-d WK-means 65.92% ± 4.31% 80.12% ± 5.00% 61.04% ± 5.93%
+2-d MMDK-means 52.75% ± 2.70% 59.65% ± 2.14% 50.33% ± 3.73%
+Exhibit 41: Accuracy scores with 95% CI, GBM synthetic path with simultaneous correlation regimes
+and ρ =0, ρ =0.5, n=50 runs.
+0 1
+C.1.5 Free mean-variance regime and correlation regime results
+Algorithm Total Regime-on Regime-off
+2-d WK-means 63.52% ± 5.04% 61.46% ± 5.10% 64.57% ± 6.41%
+2-d MMDK-means 60.49% ± 3.08% 61.85% ± 3.59% 59.51% ± 4.59%
+Exhibit 42: Accuracy scores with 95% CI, GBM synthetic path, k = 4, with correlation and mean-
+variance regimes, n=50 runs.
+29
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+Algorithm Regime-on JR Regime-on JR Regime-on JR
+1 2 3
+2-d WK-means 58.77% ± 9.08% 43.57% ± 13.09% 82.03% ± 8.88%
+2-d MMDK-means 21.87% ± 10.14% 70.01% ± 9.77% 93.67% ± 3.85%
+Exhibit 43: Accuracy scores with 95% CI, GBM synthetic path, k =4, with correlation (JR ), mean-
+1
+variance (JR ) and joint correlation-mean-variance (JR ) regimes, n=50 runs.
+2 3
+C.2 Correlation of Merton jump diffusion processes
+The following work has been adapted from [CC11].
+Let(Ω,F,{F },P)beaprobabilityspaceandletW =(W1,W2)beabivariatecorrelatedBrownian
+t t t t
+motion process adapted to the filtration. We define a covariance matrix
+(cid:18) (cid:19)
+1 ρ
+Σ= ,
+ρ 1
+where dW1,W2 = ρdt with ρ the instantaneous correlation between the two Brownian motion com-
+t t
+ponents. We define a homogeneous Poisson counting measure p(dy,dt) ≡ p(dy1,dy2,dt) defined over
+R2×[0,T] which is associated with a marked point process ((Y ),N ). The intensity of the Poisson
+n t
+measure is λmP(dy)dt, where λ>0 is the constant arrival rate of the jumps of the Poisson process N
+t
+under P and mP(dy) is the probability distribution on the independently and identically distributed
+marks Y , which is also independent of N and W .
+n t t
+We denote the compensated measure as
+pˆ(dy,dt)=p(dy,dt)−λmP(dy)dt.
+We assume that we have two assets S1 and S2 whose return dynamics under the market measure P
+are given by
+dSi (cid:90)
+t =µidt+σidWi+ [eyi −1]pˆ(dy,dt),
+Si t
+t− R2
+fori=1,2whereµi istheexpectedreturnperunittime,andσi istheinstantaneousvolatilityperunit
+time. Sincewehavetwoassetsinourmodel,thejump-sizeY =(Y1,Y2)T isabivariateprocesstaking
+valuesy =(y1,y2)T inR2. WhenrestrictingthePoissonmeasuretooneofthejump-sizecomponents,
+we write
+(cid:90)
+p(dyi,dt)≡ p(dyi,dyj,dt)dyj,
+R
+for i=1,2 and j =2,1 with the associated compensated measures
+pˆ(dyi,dt)=p(dyi,dt)−λmP(dyi)dt,
+for i=1,2 where mP(dyi) denotes the marginal distribution of jump-sizes Y
+n
+i under P.
+The Yi for i = 1,2 are random jump-sizes assumed to be correlated pairwise with correlation
+Corr[Y1,Y2] = ρ . For our purposes we assume ρ = ρ. We define the expected proportional
+Y Y
+jump-size as
+(cid:90)
+κi ≡E P[eYi −1]≡ [eyi −1]mP(dyi).
+R
+We note that in terms of the compensated Poisson measure associated with each particular asset, we
+may write
+dSi (cid:90)
+t =µidt+σidWi+ [eyi −1]pˆ(dyi,dt)
+Si t
+t− R
+(cid:90)
+=µidt+σidW
+t
+i+ [eyi −1](p(dyi,dt)−λmP(dyi)dt)
+R
+(cid:90) (cid:90)
+=µidt+σidW
+t
+i+ [eyi −1]p(dyi,dt)−λ [eyi −1]mP(dyi)dt
+R R
+(cid:90)
+=(µi−λκi)dt+σidWi+ [eyi −1]p(dyi,dt),
+t
+R2
+30
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+which yields a solution of the form
+(cid:34)(cid:32) σi (cid:33) (cid:88) Nt (cid:35)
+Si =Siexp µi−λκi− t+σiWi+ Yi ,
+t 0 2 t n
+n=1
+for i=1,2.
+C.3 Merton jump diffusion process
+C.3.1 Further fixed correlation regime results
+Algorithm Asset Total Regime-on Regime-off
+2-d WK-means - 85.47% ± 4.83% 79.16% ± 9.73% 87.37% ± 5.30%
+Uni-d 1-WK-means 1 90.07% ± 3.79% 83.75% ± 8.38% 91.96% ± 4.67%
+Uni-d 2-WK-means 1 94.71% ± 1.65% 81.45% ± 6.77% 98.91% ± 0.05%
+Uni-d 1-WK-means 2 89.74% ± 3.23% 80.33% ± 9.47% 92.67% ± 3.63%
+Uni-d 2-WK-means 2 89.50% ± 2.35% 60.12% ± 9.65% 99.07% ± 0.08%
+2-d MMDK-means - 83.07% ± 7.44% 75.06% ± 11.07% 85.55% ± 6.30%
+Exhibit 44: Accuracy scores with 95% CI, MJD synthetic path with simultaneous mean-variance
+regimes and ρ=0, n=50 runs.
+Algorithm Total Regime-on Regime-off
+2-d WK-means 87.54% ± 3.96% 77.76% ± 9.27% 90.59% ± 4.81%
+2-d MMDK-means 97.27% ± 1.97% 96.49% ± 0.81% 97.30% ± 2.40%
+Exhibit 45: Accuracy scores with 95% CI, MJD synthetic path with simultaneous mean-variance
+regimes and fixed ρ=0.5, n=50 runs.
+Algorithm Total Regime-on Regime-off
+2-d WK-means 90.84% ± 3.05% 78.15% ± 9.37% 94.85% ± 2.64%
+2-d MMDK-means 90.71% ± 3.67% 98.46% ± 0.15% 87.92% ± 4.92%
+Exhibit 46: Accuracy scores with 95% CI, MJD synthetic path with simultaneous mean-variance
+regimes and fixed ρ=−0.5, n=50 runs.
+Algorithm Total Regime-on Regime-off
+2-d WK-means 89.05% ± 3.81% 76.12% ± 10.65% 94.97% ± 3.50%
+2-d MMDK-means 88.04% ± 4.35% 95.13% ± 1.85% 85.47% ± 5.40%
+Exhibit 47: Accuracy scores with 95% CI, MJD synthetic path with simultaneous mean-variance
+regimes and fixed ρ=−1, n=50 runs.
+C.3.2 Further fixed mean-variance regime results
+Algorithm Total Regime-on Regime-off
+2-d WK-means 83.41% ± 6.11% 78.35% ± 9.70% 84.90% ± 6.45%
+2-d MMDK-means 77.41% ± 6.79% 79.48% ± 6.46% 76.54% ± 7.20%
+Exhibit 48: Accuracy scores with 95% CI, MJD synthetic path with simultaneous correlation regimes
+and ρ =1, ρ =0, n=50 runs.
+0 1
+31
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+Algorithm Total Regime-on Regime-off
+2-d WK-means 90.05% ± 4.87% 84.63% ± 9.41% 91.64% ± 6.11%
+2-d MMDK-means 90.98% ± 5.12% 84.26% ± 9.39% 93.00% ± 4.10%
+Exhibit 49: Accuracy scores with 95% CI, MJD synthetic path with simultaneous correlation regimes
+and ρ =0, ρ =−1, n=50 runs.
+0 1
+Algorithm Total Regime-on Regime-off
+2-d WK-means 82.95% ± 6.56% 74.09% ± 10.39% 85.71% ± 6.77%
+2-d MMDK-means 75.77% ± 6.75% 79.08% ± 7.06% 74.94% ± 7.33%
+Exhibit 50: Accuracy scores with 95% CI, MJD synthetic path with simultaneous correlation regimes
+and ρ =−1, ρ =0, n=50 runs.
+0 1
+Algorithm Total Regime-on Regime-off
+2-d WK-means 82.09% ± 5.58% 84.48% ± 7.59% 81.10% ± 6.91%
+2-d MMDK-means 89.34% ± 5.54% 88.48% ± 6.61% 89.43% ± 5.39%
+Exhibit 51: Accuracy scores with 95% CI, MJD synthetic path with simultaneous correlation regimes
+and ρ =−0.5, ρ =−1, n=50 runs.
+0 1
+Algorithm Total Regime-on Regime-off
+2-d WK-means 64.86% ± 4.63% 77.81% ± 7.73% 60.40% ± 6.94%
+2-d MMDK-means 55.86% ± 2.54% 66.40% ± 4.73% 52.23% ± 2.33%
+Exhibit 52: Accuracy scores with 95% CI, MJD synthetic path with simultaneous correlation regimes
+and ρ =0, ρ =0.5, n=50 runs.
+0 1
+D Appendix 4
+In this appendix we provide statements and proofs related to results in section 5 of the paper.
+Theorem D.1 (Sklar’s theorem, [Skl59] (Theorem 2, page 230)). Let X =(X ,...,X ) be a random
+1 d
+vector with joint CDF F and with marginal CDFs F ,...,F . Then there is a copula C :[0,1]d →[0,1]
+1 d
+such that
+(cid:16) (cid:17)
+F(x ,...,x )=C F (x ),...,F (x ) ,
+1 d 1 1 d d
+where x ,...,x ∈ R∪{−∞,∞}. Moreover, the copula is uniquely defined when F ,...,F are con-
+1 d 1 d
+tinuous.
+PropositionD.2(Probabilitytransformation). SupposeXisarandomvariablewithcontinuousCDF
+F. Then F(X)∼ Uniform(0, 1).
+Proof. Let X be a continuous random variable with CDF F(x). We define Y :=F(X) such that G(y)
+is the CDF of Y. Then for y ∈[0,1], if F−1(y) exists we have that
+G(y)=P(Y ≤y)
+=P(F(X)≤y)
+=P(X ≤F−1(y))
+=F(F−1(y))
+=y
+If F−1(y) does not exist then we replace it with the generalised inverse F←(y) = inf{x : F(x) ≥ y}
+for y ∈(0,1), F←(−∞)=0 and F←(∞)=1, and the result still holds.
+32
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+Theorem D.3 (Kolmogorov-Smirnovtwo-tailgoodness-of-fittest,[Dod08](pages283-287)). LetX =
+(X ,...,X ) be independent and identically distributed random variables with an empirical cumulative
+1 n
+distribution function denoted F (x) and let F(x) be a continuous distribution. We set up a goodness-
+n
+of-fit test using the Kolmogorov-Smirnov test statistic defined as
+D =sup|F (x)−F(x)|,
+n n
+x
+and where our hypotheses to test are
+H :F (x)=F(x) for each x,
+0 n
+H :F (x)̸=F(x) for at least one value of x.
+1 n
+D.1 Geometric Brownian motion synthetic data experiments revisited
+Algorithm Asset Total Regime-on Regime-off
+Uni-d 1-WK-means 1 94.49% 94.43% 94.29%
+Uni-d 1-WK-means 2 95.82% 96.06% 95.52%
+Exhibit53: Accuracyscoresofuni-d 1-WK-meansappliedtoGBMsyntheticpathswithmean-variance
+and correlation regimes, ρ =0 and ρ =1, n=50 runs.
+0 1
+Algorithm Total Regime-on Regime-off
+2-d WK-means 99.48% ± 0.00% 99.01% ± 0.00% 99.41% ± 0.00%
+2-d MMDK-means 99.44% ± 0.00% 99.41% ± 0.00% 99.22% ± 0.00%
+Exhibit54: Accuracyscoresof2-d WK-meansand2-d MMDK-meansappliedtoGBMsyntheticpaths
+with mean-variance and correlation regimes, ρ =0 and ρ =1.
+0 1
+E Appendix 5
+In this appendix we provide statements and proofs related to results in section 6 of the paper.
+E.1 Modern Portfolio Theory
+First proposed by H. Markowitz in 1952 [Mar52], Modern Portfolio Theory suggests we assemble our
+portfoliosuchthatwemaximiseourexpectedreturnsµ foragivenlevelofriskσ . Thisiscommonly
+p p
+referred to as mean-variance optimisation. For two assets, this problem may be expressed in symbolic
+form as
+max µ =wTµ
+p
+w
+s.t.σ2 =wTΣw andwT1=1,
+t
+wherew isour2×1weightsvector, µisthe2×1vectorofexpectedreturns, σ2 isourtargetportfolio
+t
+variance, 1 is a 2×1 vector of ones (highlighted in bold so as to distinguish it from the integer value
+1), and Σ is the 2×2 covariance matrix of our constituent assets. For a portfolio of two assets one
+may write the covariance matrix Σ as
+(cid:18) σ2 ρ×σ ×σ (cid:19)
+Σ= 1 1 2 ,
+ρ×σ ×σ σ2
+1 2 2
+where σ2 is the variance of asset 1, σ2 is the variance of asset 2, and ρ is the correlation between
+1 2
+the two assets. The constraint of wT1 = 1 ensures the total weight of our portfolio sums to 1. This
+33
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+optimisation problem has a dual form where we instead minimise the variance of our portfolio for a
+given target return, µ ,
+t
+min σ2 =wTΣw (3)
+p
+w
+s.t.µ =wTµandwT1=1. (4)
+t
+This is a constrained minimisation problem and we may solve it using a Lagrangian function and
+matrix algebra. Solving this minimisation problem leaves us with an equation of the form Ax = b.
+Should A be invertible, then it has solution x=A−1b where
+     
+2Σ µ 1 w 0
+A=µT 0 0, x=λ 1, b=µ t. (5)
+1T 0 0 λ 1
+2
+In order to solve equation (5) in python, we make use of the scipy.linalg package and its solve
+method. Passing the matrix A and vector b as inputs, the method returns the array x. We then
+proceed to normalise the array such that the weights are less than 1 in absolute value.
+References
+[AAH+17] Arbey Arag´on, Andr´es Ar´evalo, Germ´an Hern´andez, Diego Le´on, Javier Sandoval, and
+JaimeNin˜o. Clusteringalgorithmsforrisk-adjustedportfolioconstruction. Procedia Com-
+puter Science, 108:1334–1343, 2017.
+[ABH+12] LuigiAmbrosio,AlbertoBressan,DirkHelbing,AxelKlar,andEnriqueZuazua.Modelling
+and Optimisation of Flows on Networks: Cetraro, Italy 2009, Editors: Benedetto Piccoli,
+Michel Rascle, volume 2062. Springer, 2012.
+[ACFL20] Imanol Perez Arribas, Thomas Cochrane, Peter Foster, and Terry Lyons. Anomaly detec-
+tion on streamed data. arXiv preprint arXiv:2006.03487, 2020.
+[AGS05] Luigi Ambrosio, Nicola Gigli, and Giuseppe Savar´e. Gradient flows: in metric spaces and
+in the space of probability measures. Springer Science & Business Media, 2005.
+[ANN14] Shun-ichi Amari, Frank Nielsen, and Richard Nock. On clustering histograms with k-
+means by using mixed α-divergences. Entropy, 16(6):3273–3301, 2014.
+[AV07] David Arthur and Sergei Vassilvitskii. K-means++ the advantages of careful seeding.
+In Proceedings of the eighteenth annual ACM-SIAM symposium on Discrete algorithms,
+pages 1027–1035, 2007.
+[BBRW20] Ammar Belatreche, Ahmed Bouridane, Baqar Rizvi, and Ian Watson. Detection of stock
+pricemanipulationusingkernelbasedprincipalcomponentanalysisandmultivariateden-
+sity estimation. IEEE Access, 8:135989–136003, 2020.
+[BDM12] Rainer Burkard, Mauro Dell’Amico, and Silvano Martello. Assignment problems: revised
+reprint. SIAM, 2012.
+[BDPR12] Marc Bernot, Julie Delon, Gabriel Peyr´e, and Julien Rabin. Wasserstein barycenter and
+its application to texture mixing. In Scale Space and Variational Methods in Computer
+Vision: Third International Conference, SSVM 2011, Ein-Gedi, Israel, May 29–June 2,
+2011, Revised Selected Papers 3, pages 435–446. Springer, 2012.
+[BGR+12] Karsten M Borgwardt, Arthur Gretton, Malte J Rasch, Bernhard Sch¨olkopf, and Alexan-
+der Smola. A kernel two-sample test. The Journal of Machine Learning Research,
+13(1):723–773, 2012.
+[BKL+19] Patric Bonnier, Patrick Kidger, Terry Lyons, Imanol Perez Arribas, and Cristopher Salvi.
+Deepsignaturetransforms. Advances in Neural Information Processing Systems,32,2019.
+34
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+[BKN+19] RolandBadeau,SoheilKolouri,KimiaNadjahi,GustavoRohde,andUmutSimsekli. Gen-
+eralized sliced wasserstein distances. Advances in neural information processing systems,
+32, 2019.
+[CC11] Gerald HL Cheang and Carl Chiarella. Exchange options under jump-diffusion dynamics.
+Applied Mathematical Finance, 18(3):245–276, 2011.
+[CD14] Marco Cuturi and Arnaud Doucet. Fast computation of wasserstein barycenters. In
+International conference on machine learning, pages 685–693. PMLR, 2014.
+[CDL+16] NicolasChampagnat,MadalinaDeaconu,AntoineLejay,NicolasNavet,andKhaledSalhi.
+Regime switching model for financial data: Empirical risk analysis. Physica A: Statistical
+Mechanics and its Applications, 461:148–157, 2016.
+[CGJ20] Marco Cuturi, Alexandre Gramfort, and Hicham Janati. Debiased sinkhorn barycenters.
+In International Conference on Machine Learning, pages 4692–4701. PMLR, 2020.
+[CGOY15] A Taylan Cemgil, Fikret S Gu¨rgen, Nesrin Okay, and M Serdar Yu¨mlu¨. Bayesian change-
+point and time-varying parameter learning in regime switching volatility models. Digital
+Signal Processing, 40:198–212, 2015.
+[Cho07] Nicolas Chopin. Dynamic detection of change points in long time series. Annals of the
+Institute of Statistical Mathematics, 59(2):349, 2007.
+[CPS+22] Rongbo Chen, Jean-Marc Patenaude, Mingxuan Sun, Shengrui Wang, and Kunpeng Xu.
+Clustering-based cross-sectional regime identification for financial market forecasting. In
+Database and Expert Systems Applications: 33rd International Conference, DEXA 2022,
+Vienna, Austria, August 22–24, 2022, Proceedings, Part II, pages 3–16. Springer, 2022.
+[CT17] JunChenandEdwardPKTsang.Constructingabellwethertheory: Regimechangedetec-
+tion using directional change. In 2017 9th Computer Science and Electronic Engineering
+(CEEC), pages 112–115. IEEE, 2017.
+[DM12] Pierpaolo D’Urso and Elizabeth Ann Maharaj. Wavelets-based clustering of multivariate
+time series. Fuzzy Sets and Systems, 193:33–61, 2012.
+[Dod08] YadolahDodge.Theconciseencyclopediaofstatistics.SpringerScience&BusinessMedia,
+2008.
+[EHK+17] Attila Egri, Ill´es Horv´ath, Ferenc Kov´acs, Roland Molontay, and Kriszti´an Varga. Cross-
+correlation based clustering and dimension reduction of multivariate time series. In 2017
+IEEE 21st International Conference on Intelligent Engineering Systems (INES), pages
+000241–000246. IEEE, 2017.
+[FGSS08] Kenji Fukumizu, Arthur Gretton, Bernhard Sch¨olkopf, and Bharath K Sriperumbudur.
+Characteristickernelsongroupsandsemigroups. Advances in neural information process-
+ing systems, 21, 2008.
+[Fol99] Gerald B Folland. Real analysis: modern techniques and their applications, volume 40.
+John Wiley & Sons, 1999.
+[GLMT08] MauroGallegati,FabrizioLillo,RosarioNMantegna,andVincenzoTola. Clusteranalysis
+for portfolio optimization. Journal of Economic Dynamics and Control, 32(1):235–258,
+2008.
+[GT05] Massimo Guidolin and Allan Timmermann. Economic implications of bull and bear
+regimes in uk stock and bond returns. The Economic Journal, 115(500):111–143, 2005.
+[GWX21] Rui Gao, Jie Wang, and Yao Xie. Two-sample test using projected wasserstein distance.
+In 2021 IEEE International Symposium on Information Theory (ISIT), pages 3320–3325.
+IEEE, 2021.
+35
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+[GWXY19] Dongdong Ge, Haoyue Wang, Zikai Xiong, and Yinyu Ye. Interior-point methods strike
+back: Solving the wasserstein barycenter problem. Advances in Neural Information Pro-
+cessing Systems, 32, 2019.
+[Ham89] JamesDHamilton. Anewapproachtotheeconomicanalysisofnonstationarytimeseries
+and the business cycle. Econometrica: Journal of the econometric society, pages 357–384,
+1989.
+[HI23] Blanka Horvath and Zacharia Issa. Non-parametric online market regime detection and
+regimeclusteringformultidimensionalandpath-dependentdatastructures.arXivpreprint
+arXiv:2306.15835, 2023.
+[HIM21] BlankaHorvath,ZachariaIssa,andAitorMuguruza. Clusteringmarketregimesusingthe
+wasserstein distance. arXiv preprint arXiv:2110.11848, 2021.
+[HJKS01] Weiyun Huang, Erik Johnson, Hillol Kargupta, and Krishnamoorthy Sivakumar. Dis-
+tributed clustering using collective principal component analysis. Knowledge and Infor-
+mation Systems, 3:422–448, 2001.
+[HNZ16] Ning Hao, Yue S Niu, and Heping Zhang. Multiple change-point detection: a selective
+overview. Statistical Science, pages 611–623, 2016.
+[IM17] SR Idate and Harshada C Mandhare. A comparative study of cluster based outlier detec-
+tion, distance based outlier detection and density based outlier detection techniques. In
+2017 International Conference on Intelligent Computing and Control Systems (ICICCS),
+pages 931–935. IEEE, 2017.
+[Kan60] Leonid V Kantorovich. Mathematical methods of organizing and planning production.
+Management science, 6(4):366–422, 1960.
+[Kuh55] Harold W Kuhn. The hungarian method for the assignment problem. Naval research
+logistics quarterly, 2(1-2):83–97, 1955.
+[Li19] HailinLi. Multivariatetimeseriesclusteringbasedoncommonprincipalcomponentanal-
+ysis. Neurocomputing, 349:239–247, 2019.
+[Lia05] TWarrenLiao. Clusteringoftimeseriesdata—asurvey. Patternrecognition,38(11):1857–
+1874, 2005.
+[LOV21] A´ngel L´opez-Oriona and Jos´e A Vilar. Quantile cross-spectral density: A novel and
+effective tool for clustering multivariate time series. Expert Systems with Applications,
+185:115677, 2021.
+[LR09] TheisLangeandAndersRahbek. Anintroductiontoregimeswitchingtimeseriesmodels.
+In Handbook of Financial Time Series, pages 871–887. Springer, 2009.
+[LWWY17] JiaLi,JamesZWang,PanruoWu,andJianboYe. Fastdiscretedistributionclusteringus-
+ing wasserstein barycenter with sparse support. IEEE Transactions on Signal Processing,
+65(9):2317–2332, 2017.
+[Mac67] J MacQueen. Classification and analysis of multivariate observations. In 5th Berkeley
+Symp. Math. Statist. Probability, pages 281–297. University of California Los Angeles LA
+USA, 1967.
+[Mar52] Harry Markowitz. Portfolio selection. The Journal of Finance, 7(1):77–91, 1952.
+[MMS12] John M Maheu, Thomas H McCurdy, and Yong Song. Components of bull and bear
+markets: bull corrections and bear rallies. Journal of Business & Economic Statistics,
+30(3):391–403, 2012.
+[Mon81] Gaspard Monge. M´emoire sur la th´eorie des d´eblais et des remblais. Mem. Math. Phys.
+Acad. Royale Sci., pages 666–704, 1781.
+36
+Electronic copy available at: https://ssrn.com/abstract=4758243
+
+[Pea01] Karl Pearson. Liii. on lines and planes of closest fit to systems of points in space. The
+London, Edinburgh, and Dublin philosophical magazine and journal of science, 2(11):559–
+572, 1901.
+[PRSX07] JohnPowell, Rub´enRoa, JingShi, andViliphonhXayavong. Atestforlong-termcyclical
+clustering of stock market regimes. Australian Journal of Management, 32(2):205–221,
+2007.
+[Skl59] M Sklar. Fonctions de r´epartition `a n dimensions et leurs marges. In Annales de l’ISUP,
+volume 8, pages 229–231, 1959.
+[SS05] Bernhard Sch¨olkopf and Alex Smola. Support vector machines and kernel algorithms. In
+Encyclopedia of Biostatistics, pages 5328–5335. Wiley, 2005.
+[Tho19] Matthew Thorpe. Introduction to optimal transport. Lecture Notes, 3, 2019.
+[TX15] YingjieTianandDongkuanXu. Acomprehensivesurveyofclusteringalgorithms. Annals
+of Data Science, 2:165–193, 2015.
+37
+Electronic copy available at: https://ssrn.com/abstract=4758243
