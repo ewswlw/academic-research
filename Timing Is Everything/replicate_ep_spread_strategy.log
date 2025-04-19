@@ -1,0 +1,347 @@
+2025-04-18 19:09:42,093 - INFO - Fetching data from 1990-01-01 to 2025-04-18
+2025-04-18 19:09:42,486 - ERROR - Failed to fetch SPX Index: 'PX_LAST'
+2025-04-18 19:10:30,915 - INFO - Fetching data from 1990-01-01 to 2025-04-18
+2025-04-18 19:10:31,265 - INFO - Raw SPX DataFrame head:
+           SPX Index
+             PX_LAST
+1990-01-31    329.08
+1990-02-28    331.89
+1990-03-30    339.94
+1990-04-30    330.80
+1990-05-31    361.23
+Columns: [('SPX Index', 'PX_LAST')]
+2025-04-18 19:10:31,266 - ERROR - 'PX_LAST' not found in DataFrame columns: [('SPX Index', 'PX_LAST')]
+2025-04-18 19:11:29,598 - INFO - Fetching data from 1990-01-01 to 2025-04-18
+2025-04-18 19:11:30,001 - INFO - Raw SPX DataFrame head:
+           SPX Index
+             PX_LAST
+1990-01-31    329.08
+1990-02-28    331.89
+1990-03-30    339.94
+1990-04-30    330.80
+1990-05-31    361.23
+Columns: [('SPX Index', 'PX_LAST')]
+2025-04-18 19:11:30,001 - INFO - SPX data: 1990-01-31 to 2025-03-31, n=423
+2025-04-18 19:11:30,221 - INFO - Raw EPS DataFrame head:
+           SPX Index
+            BEST_EPS
+1990-04-30   27.7986
+1990-05-31   27.8366
+1990-06-29   27.0567
+1990-07-31   26.7549
+1990-08-31   26.4707
+Columns: [('SPX Index', 'BEST_EPS')]
+2025-04-18 19:11:30,222 - INFO - EPS data: 1990-04-30 to 2025-03-31, n=420
+2025-04-18 19:11:30,806 - INFO - Raw T-bill DataFrame head:
+Empty DataFrame
+Columns: []
+Index: []
+Columns: []
+2025-04-18 19:11:30,806 - ERROR - Neither 'YLD_YTM_MID' nor ('USGG3M Index', 'YLD_YTM_MID') found in columns: []
+2025-04-18 19:12:58,902 - INFO - Fetching data from 1990-01-01 to 2025-04-18
+2025-04-18 19:12:59,288 - INFO - Raw SPX DataFrame head:
+           SPX Index
+             PX_LAST
+1990-01-31    329.08
+1990-02-28    331.89
+1990-03-30    339.94
+1990-04-30    330.80
+1990-05-31    361.23
+Columns: [('SPX Index', 'PX_LAST')]
+2025-04-18 19:12:59,289 - INFO - SPX data: 1990-01-31 to 2025-03-31, n=423
+2025-04-18 19:12:59,524 - INFO - Raw EPS DataFrame head:
+           SPX Index
+            BEST_EPS
+1990-04-30   27.7986
+1990-05-31   27.8366
+1990-06-29   27.0567
+1990-07-31   26.7549
+1990-08-31   26.4707
+Columns: [('SPX Index', 'BEST_EPS')]
+2025-04-18 19:12:59,524 - INFO - EPS data: 1990-04-30 to 2025-03-31, n=420
+2025-04-18 19:12:59,667 - INFO - Raw T-bill DataFrame [USGG3M Index, YLD_YTM_MID (original)] head:
+Empty DataFrame
+Columns: []
+Index: []
+Columns: []
+2025-04-18 19:12:59,928 - INFO - Raw T-bill DataFrame [US0003M Index, PX_LAST (3M LIBOR proxy)] head:
+           US0003M Index
+                 PX_LAST
+1990-01-31        8.3750
+1990-02-28        8.3750
+1990-03-30        8.5000
+1990-04-30        8.6875
+1990-05-31        8.3750
+Columns: [('US0003M Index', 'PX_LAST')]
+2025-04-18 19:12:59,928 - INFO - T-bill data [US0003M Index, PX_LAST (3M LIBOR proxy)]: 1990-01-31 to 2024-09-30, n=417
+2025-04-18 19:12:59,937 - INFO - Aligned data shape: (414, 3), head:
+               SPX      EPS     TBill
+1990-04-30  330.80  27.7986  0.086875
+1990-05-31  361.23  27.8366  0.083750
+1990-06-29  358.02  27.0567  0.083750
+1990-07-31  356.15  26.7549  0.079375
+1990-08-31  322.56  26.4707  0.080625
+2025-04-18 19:13:32,024 - INFO - Fetching data from 1990-01-01 to 2025-04-18
+2025-04-18 19:13:32,394 - INFO - Raw SPX DataFrame head:
+           SPX Index
+             PX_LAST
+1990-01-31    329.08
+1990-02-28    331.89
+1990-03-30    339.94
+1990-04-30    330.80
+1990-05-31    361.23
+Columns: [('SPX Index', 'PX_LAST')]
+2025-04-18 19:13:32,394 - INFO - SPX data: 1990-01-31 to 2025-03-31, n=423
+2025-04-18 19:13:32,617 - INFO - Raw EPS DataFrame head:
+           SPX Index
+            BEST_EPS
+1990-04-30   27.7986
+1990-05-31   27.8366
+1990-06-29   27.0567
+1990-07-31   26.7549
+1990-08-31   26.4707
+Columns: [('SPX Index', 'BEST_EPS')]
+2025-04-18 19:13:32,618 - INFO - EPS data: 1990-04-30 to 2025-03-31, n=420
+2025-04-18 19:13:32,736 - INFO - Raw T-bill DataFrame [USGG3M Index, YLD_YTM_MID (original)] head:
+Empty DataFrame
+Columns: []
+Index: []
+Columns: []
+2025-04-18 19:13:32,967 - INFO - Raw T-bill DataFrame [US0003M Index, PX_LAST (3M LIBOR proxy)] head:
+           US0003M Index
+                 PX_LAST
+1990-01-31        8.3750
+1990-02-28        8.3750
+1990-03-30        8.5000
+1990-04-30        8.6875
+1990-05-31        8.3750
+Columns: [('US0003M Index', 'PX_LAST')]
+2025-04-18 19:13:32,968 - INFO - T-bill data [US0003M Index, PX_LAST (3M LIBOR proxy)]: 1990-01-31 to 2024-09-30, n=417
+2025-04-18 19:13:32,971 - INFO - Aligned data shape: (414, 3), head:
+               SPX      EPS     TBill
+1990-04-30  330.80  27.7986  0.086875
+1990-05-31  361.23  27.8366  0.083750
+1990-06-29  358.02  27.0567  0.083750
+1990-07-31  356.15  26.7549  0.079375
+1990-08-31  322.56  26.4707  0.080625
+2025-04-18 19:13:32,972 - INFO - Signal summary:
+1    334
+0     80
+Name: Signal, dtype: int64
+2025-04-18 19:14:16,169 - INFO - Fetching data from 1990-01-01 to 2025-04-18
+2025-04-18 19:14:16,480 - INFO - Raw SPX DataFrame head:
+           SPX Index
+             PX_LAST
+1990-01-31    329.08
+1990-02-28    331.89
+1990-03-30    339.94
+1990-04-30    330.80
+1990-05-31    361.23
+Columns: [('SPX Index', 'PX_LAST')]
+2025-04-18 19:14:16,480 - INFO - SPX data: 1990-01-31 to 2025-03-31, n=423
+2025-04-18 19:14:16,671 - INFO - Raw EPS DataFrame head:
+           SPX Index
+            BEST_EPS
+1990-04-30   27.7986
+1990-05-31   27.8366
+1990-06-29   27.0567
+1990-07-31   26.7549
+1990-08-31   26.4707
+Columns: [('SPX Index', 'BEST_EPS')]
+2025-04-18 19:14:16,671 - INFO - EPS data: 1990-04-30 to 2025-03-31, n=420
+2025-04-18 19:14:16,786 - INFO - Raw T-bill DataFrame [USGG3M Index, YLD_YTM_MID (original)] head:
+Empty DataFrame
+Columns: []
+Index: []
+Columns: []
+2025-04-18 19:14:16,967 - INFO - Raw T-bill DataFrame [US0003M Index, PX_LAST (3M LIBOR proxy)] head:
+           US0003M Index
+                 PX_LAST
+1990-01-31        8.3750
+1990-02-28        8.3750
+1990-03-30        8.5000
+1990-04-30        8.6875
+1990-05-31        8.3750
+Columns: [('US0003M Index', 'PX_LAST')]
+2025-04-18 19:14:16,967 - INFO - T-bill data [US0003M Index, PX_LAST (3M LIBOR proxy)]: 1990-01-31 to 2024-09-30, n=417
+2025-04-18 19:14:16,973 - INFO - Aligned data shape: (414, 3), head:
+               SPX      EPS     TBill
+1990-04-30  330.80  27.7986  0.086875
+1990-05-31  361.23  27.8366  0.083750
+1990-06-29  358.02  27.0567  0.083750
+1990-07-31  356.15  26.7549  0.079375
+1990-08-31  322.56  26.4707  0.080625
+2025-04-18 19:14:16,977 - INFO - Signal summary:
+1    334
+0     80
+Name: Signal, dtype: int64
+2025-04-18 19:14:45,799 - INFO - Fetching data from 1990-01-01 to 2025-04-18
+2025-04-18 19:14:46,171 - INFO - Raw SPX DataFrame head:
+           SPX Index
+             PX_LAST
+1990-01-31    329.08
+1990-02-28    331.89
+1990-03-30    339.94
+1990-04-30    330.80
+1990-05-31    361.23
+Columns: [('SPX Index', 'PX_LAST')]
+2025-04-18 19:14:46,171 - INFO - SPX data: 1990-01-31 to 2025-03-31, n=423
+2025-04-18 19:14:46,360 - INFO - Raw EPS DataFrame head:
+           SPX Index
+            BEST_EPS
+1990-04-30   27.7986
+1990-05-31   27.8366
+1990-06-29   27.0567
+1990-07-31   26.7549
+1990-08-31   26.4707
+Columns: [('SPX Index', 'BEST_EPS')]
+2025-04-18 19:14:46,361 - INFO - EPS data: 1990-04-30 to 2025-03-31, n=420
+2025-04-18 19:14:46,523 - INFO - Raw T-bill DataFrame [USGG3M Index, YLD_YTM_MID (original)] head:
+Empty DataFrame
+Columns: []
+Index: []
+Columns: []
+2025-04-18 19:14:46,788 - INFO - Raw T-bill DataFrame [US0003M Index, PX_LAST (3M LIBOR proxy)] head:
+           US0003M Index
+                 PX_LAST
+1990-01-31        8.3750
+1990-02-28        8.3750
+1990-03-30        8.5000
+1990-04-30        8.6875
+1990-05-31        8.3750
+Columns: [('US0003M Index', 'PX_LAST')]
+2025-04-18 19:14:46,788 - INFO - T-bill data [US0003M Index, PX_LAST (3M LIBOR proxy)]: 1990-01-31 to 2024-09-30, n=417
+2025-04-18 19:14:46,791 - INFO - Aligned data shape: (414, 3), head:
+               SPX      EPS     TBill
+1990-04-30  330.80  27.7986  0.086875
+1990-05-31  361.23  27.8366  0.083750
+1990-06-29  358.02  27.0567  0.083750
+1990-07-31  356.15  26.7549  0.079375
+1990-08-31  322.56  26.4707  0.080625
+2025-04-18 19:14:46,794 - INFO - Signal summary:
+1    334
+0     80
+Name: Signal, dtype: int64
+2025-04-18 19:15:02,855 - INFO - vectorbt stats:
+Start                          1990-04-30
+End                            2024-08-30
+Period                                413
+Start Value                           1.0
+End Value                        7.362102
+Total Return [%]                636.21019
+Benchmark Return [%]          1607.496977
+Max Gross Exposure [%]              100.0
+Total Fees Paid                       0.0
+Max Drawdown [%]                52.555861
+Max Drawdown Duration                64.0
+Total Trades                            6
+Total Closed Trades                     6
+Total Open Trades                       0
+Open Trade PnL                        0.0
+Win Rate [%]                    83.333333
+Best Trade [%]                 259.335706
+Worst Trade [%]                 -0.105407
+Avg Winning Trade [%]           68.576878
+Avg Losing Trade [%]            -0.105407
+Avg Winning Trade Duration           66.2
+Avg Losing Trade Duration             3.0
+Profit Factor                 6036.763497
+Expectancy                        1.06035
+Name: group, dtype: object
+
+2025-04-18 19:15:02,864 - INFO - Saved data to ep_spread_strategy_data.csv
+2025-04-18 20:28:32,850 - INFO - Fetching data from 1990-01-01 to 2025-04-18
+2025-04-18 20:28:33,296 - INFO - Raw SPX DataFrame head:
+           SPX Index
+             PX_LAST
+1990-01-31    329.08
+1990-02-28    331.89
+1990-03-30    339.94
+1990-04-30    330.80
+1990-05-31    361.23
+Columns: [('SPX Index', 'PX_LAST')]
+2025-04-18 20:28:33,296 - INFO - SPX data: 1990-01-31 to 2025-03-31, n=423
+2025-04-18 20:28:33,531 - INFO - Raw EPS DataFrame head:
+           SPX Index
+            BEST_EPS
+1990-04-30   27.7986
+1990-05-31   27.8366
+1990-06-29   27.0567
+1990-07-31   26.7549
+1990-08-31   26.4707
+Columns: [('SPX Index', 'BEST_EPS')]
+2025-04-18 20:28:33,531 - INFO - EPS data: 1990-04-30 to 2025-03-31, n=420
+2025-04-18 20:28:33,674 - INFO - Raw T-bill DataFrame [USGG3M Index, YLD_YTM_MID (original)] head:
+Empty DataFrame
+Columns: []
+Index: []
+Columns: []
+2025-04-18 20:28:33,864 - INFO - Raw T-bill DataFrame [US0003M Index, PX_LAST (3M LIBOR proxy)] head:
+           US0003M Index
+                 PX_LAST
+1990-01-31        8.3750
+1990-02-28        8.3750
+1990-03-30        8.5000
+1990-04-30        8.6875
+1990-05-31        8.3750
+Columns: [('US0003M Index', 'PX_LAST')]
+2025-04-18 20:28:33,864 - INFO - T-bill data [US0003M Index, PX_LAST (3M LIBOR proxy)]: 1990-01-31 to 2024-09-30, n=417
+2025-04-18 20:28:33,867 - INFO - Aligned data shape: (414, 3), head:
+               SPX      EPS     TBill
+1990-04-30  330.80  27.7986  0.086875
+1990-05-31  361.23  27.8366  0.083750
+1990-06-29  358.02  27.0567  0.083750
+1990-07-31  356.15  26.7549  0.079375
+1990-08-31  322.56  26.4707  0.080625
+2025-04-18 20:28:33,869 - INFO - Signal summary:
+1    334
+0     80
+Name: Signal, dtype: int64
+2025-04-18 20:29:21,453 - INFO - Fetching data from 1990-01-01 to 2025-04-18
+2025-04-18 20:29:21,792 - INFO - Raw SPX DataFrame head:
+           SPX Index
+             PX_LAST
+1990-01-31    329.08
+1990-02-28    331.89
+1990-03-30    339.94
+1990-04-30    330.80
+1990-05-31    361.23
+Columns: [('SPX Index', 'PX_LAST')]
+2025-04-18 20:29:21,792 - INFO - SPX data: 1990-01-31 to 2025-03-31, n=423
+2025-04-18 20:29:21,990 - INFO - Raw EPS DataFrame head:
+           SPX Index
+            BEST_EPS
+1990-04-30   27.7986
+1990-05-31   27.8366
+1990-06-29   27.0567
+1990-07-31   26.7549
+1990-08-31   26.4707
+Columns: [('SPX Index', 'BEST_EPS')]
+2025-04-18 20:29:21,990 - INFO - EPS data: 1990-04-30 to 2025-03-31, n=420
+2025-04-18 20:29:22,118 - INFO - Raw T-bill DataFrame [USGG3M Index, YLD_YTM_MID (original)] head:
+Empty DataFrame
+Columns: []
+Index: []
+Columns: []
+2025-04-18 20:29:22,350 - INFO - Raw T-bill DataFrame [US0003M Index, PX_LAST (3M LIBOR proxy)] head:
+           US0003M Index
+                 PX_LAST
+1990-01-31        8.3750
+1990-02-28        8.3750
+1990-03-30        8.5000
+1990-04-30        8.6875
+1990-05-31        8.3750
+Columns: [('US0003M Index', 'PX_LAST')]
+2025-04-18 20:29:22,350 - INFO - T-bill data [US0003M Index, PX_LAST (3M LIBOR proxy)]: 1990-01-31 to 2024-09-30, n=417
+2025-04-18 20:29:22,351 - INFO - Aligned data shape: (414, 3), head:
+               SPX      EPS     TBill
+1990-04-30  330.80  27.7986  0.086875
+1990-05-31  361.23  27.8366  0.083750
+1990-06-29  358.02  27.0567  0.083750
+1990-07-31  356.15  26.7549  0.079375
+1990-08-31  322.56  26.4707  0.080625
+2025-04-18 20:29:22,355 - INFO - Signal summary:
+1    334
+0     80
+Name: Signal, dtype: int64
+2025-04-18 20:29:29,494 - INFO - Saved data to ep_spread_strategy_data.csv

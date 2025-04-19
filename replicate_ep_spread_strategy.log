@@ -1,0 +1,75 @@
+2025-04-18 19:15:48,664 - INFO - Fetching data from 1990-01-01 to 2025-04-18
+2025-04-18 19:15:49,075 - INFO - Raw SPX DataFrame head:
+           SPX Index
+             PX_LAST
+1990-01-31    329.08
+1990-02-28    331.89
+1990-03-30    339.94
+1990-04-30    330.80
+1990-05-31    361.23
+Columns: [('SPX Index', 'PX_LAST')]
+2025-04-18 19:15:49,075 - INFO - SPX data: 1990-01-31 to 2025-03-31, n=423
+2025-04-18 19:15:49,306 - INFO - Raw EPS DataFrame head:
+           SPX Index
+            BEST_EPS
+1990-04-30   27.7986
+1990-05-31   27.8366
+1990-06-29   27.0567
+1990-07-31   26.7549
+1990-08-31   26.4707
+Columns: [('SPX Index', 'BEST_EPS')]
+2025-04-18 19:15:49,311 - INFO - EPS data: 1990-04-30 to 2025-03-31, n=420
+2025-04-18 19:15:49,434 - INFO - Raw T-bill DataFrame [USGG3M Index, YLD_YTM_MID (original)] head:
+Empty DataFrame
+Columns: []
+Index: []
+Columns: []
+2025-04-18 19:15:49,679 - INFO - Raw T-bill DataFrame [US0003M Index, PX_LAST (3M LIBOR proxy)] head:
+           US0003M Index
+                 PX_LAST
+1990-01-31        8.3750
+1990-02-28        8.3750
+1990-03-30        8.5000
+1990-04-30        8.6875
+1990-05-31        8.3750
+Columns: [('US0003M Index', 'PX_LAST')]
+2025-04-18 19:15:49,679 - INFO - T-bill data [US0003M Index, PX_LAST (3M LIBOR proxy)]: 1990-01-31 to 2024-09-30, n=417
+2025-04-18 19:15:49,682 - INFO - Aligned data shape: (414, 3), head:
+               SPX      EPS     TBill
+1990-04-30  330.80  27.7986  0.086875
+1990-05-31  361.23  27.8366  0.083750
+1990-06-29  358.02  27.0567  0.083750
+1990-07-31  356.15  26.7549  0.079375
+1990-08-31  322.56  26.4707  0.080625
+2025-04-18 19:15:49,684 - INFO - Signal summary:
+1    334
+0     80
+Name: Signal, dtype: int64
+2025-04-18 19:15:54,027 - INFO - vectorbt stats:
+Start                          1990-04-30
+End                            2024-08-30
+Period                                413
+Start Value                           1.0
+End Value                        7.362102
+Total Return [%]                636.21019
+Benchmark Return [%]          1607.496977
+Max Gross Exposure [%]              100.0
+Total Fees Paid                       0.0
+Max Drawdown [%]                52.555861
+Max Drawdown Duration                64.0
+Total Trades                            6
+Total Closed Trades                     6
+Total Open Trades                       0
+Open Trade PnL                        0.0
+Win Rate [%]                    83.333333
+Best Trade [%]                 259.335706
+Worst Trade [%]                 -0.105407
+Avg Winning Trade [%]           68.576878
+Avg Losing Trade [%]            -0.105407
+Avg Winning Trade Duration           66.2
+Avg Losing Trade Duration             3.0
+Profit Factor                 6036.763497
+Expectancy                        1.06035
+Name: group, dtype: object
+
+2025-04-18 19:15:54,033 - INFO - Saved data to ep_spread_strategy_data.csv

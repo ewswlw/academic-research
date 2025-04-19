@@ -1,0 +1,627 @@
+
+--- Page 1 ---
+Timing is Everything
+A Comparison and Evaluation of Market Timing Strategies
+Chris Brooks♣ Apostolos Katsaris Gita Persand
+Cass Business School Cass Business School University of Southampton
+Abstract
+Following early failures, more recent empirical evidence has suggested that timing
+entries to and exits from equity markets may be feasible. A number of approaches to
+this most basic form of dynamic asset allocation are available, but which works best?
+This study investigates the relative profitability of several different methodologies
+using a very long dataset on the S&P 500. In order to overcome the accusations of
+data snooping and arbitrary parameter choice that beset much previous work in this
+area, we carefully consider whether the rule performance is sensitive to the specified
+user-adjustable parameters. We find that all but one of the approaches are able to beat
+a buy-and-hold equities strategy in risk-adjusted terms, although a strategy based on
+the difference between the earnings-price ratio and short term Treasury yields works
+best.
+1. Introduction
+The majority of academic studies of the performance of trading rules for timing exits
+from equity markets have found little theoretical or empirical support for the
+usefulness of such rules. Yet practitioner interest in market timing strategies continues
+unabated. There is widespread evidence that fund managers make significant changes
+to the compositions of their portfolios away from equities and in favour of other asset
+classes when they believe that the former are overvalued and will therefore fall in
+value. In the UK for example, Boots (the chemist) famously moved its £2.3 billion
+pension scheme out of equities into long dated bonds in 2001. Within 24 months, the
+value of UK equities had fallen by 40%. Moreover, Clare College, Cambridge, has an
+endowment fund that has outperformed the stock market consistently over the past 50
+years, and which sold its £4 million holding in US equities avoiding a subsequent
+20% fall in equity values.
+Clearly, the key to a successful market timing strategy is the knowledge of precisely
+when to withdraw from equities, and the penalties from exiting too early may be just
+as severe as exiting too late. Brunnermeier and Nagel (2004) show that hedge funds
+which rode the technology bubble from 1998 to 2000 made substantial profits while
+one that sold early suffered such large cash outflows that it was forced to liquidate.
+Asset prices have a tendency to go “up the stairs and then down in the escalator” –
+that is, they usually rise relatively slowly but are sometimes subject to abrupt
+downward corrections. Yet calling the top of the market is a very difficult problem,
+and leaving an overvalued market too soon could imply missing out on a further
+substantial increase in prices before a correction occurs. Many investors believed that
+stocks were over-valued in January 1997, after Alan Greenspan’s suggestion that “…
+♣ Corresponding author. Faculty of Finance, Cass Business School, City University, 106 Bunhill Row,
+London EC1Y 8TZ, UK. t: (+44) 20 7040 5168; f: (+44) 20 7040 8881; e-mail C.Brooks@city.ac.uk
+1
+
+--- Page 2 ---
+irrational exuberance has unduly escalated asset values…”1 but any who took short
+positions at that time would have burned as equities rallied for a further two years.
+An examination of the literature on market timing rules shows that a number of
+different kinds of rules have been employed, some with more theoretical underpinning
+than others, and with enormously varying degrees of success. Starting with Sharpe
+(1975), many early studies were unable to find rules with ability to time the market,
+leading Clarke et al. (1989) to suggest that “even people who think that it is possible
+to beat the market through stock selection seem to think that successful market timing
+is impossible” (p. 27).
+More recent work has yielded more positive findings. Shen (2003) focuses on the
+difference between the earnings-to-price (E/P) ratio and Treasury yields. He argues
+that extreme values of this differential are indicative of price divergences from
+fundamentals. A low value of the spread is an indication that equities are overvalued
+and therefore that a correction will occur in the near future. The spread between E/P
+and 3-month T-bills, and between E/P and 10-year T-bonds, termed the “short spread”
+and the “long spread” respectively, are both employed. The former is marginally more
+effective than the latter, yielding higher average returns with lower standard
+deviations. The short spread rule used to determine when to switch between equities
+and cash has a Sharpe ratio of 0.2, and the long spread has a Sharpe ratio of 0.17. This
+approach is also followed by Wong et al. (2001), who form a standardized measure of
+the differential of E/P to bond yields by taking an average value and then dividing it
+by its standard deviation over the past 2 or 3 years. They find that the standardized
+yield differential can enable investors to avoid most market crashes in the US,
+German and Singaporean markets.
+An alternative approach to determine when equities are overvalued relative to
+fundamentals would be to use an approach based on the existence and size of a
+speculative bubble in the stock market. Brooks and Katsaris (2005a and 2005b)
+employ an approach based on periodically partially collapsing speculative bubbles.
+They find, using US data, that using a timing rule based on estimated bubble models
+can yield Sharpe ratios of 0.2 to 0.25, compared with 0.15 for buying and holding the
+S&P 500 index.
+Research has suggested a link between the business cycle and the stock market (see
+Siegel, 1998), and there is also evidence that the business cycle is related to the shape
+of the term structure. The yield curve is often used as a leading indicator of likely
+future trends in GDP growth. Resnick and Shoesmith (2002) link the two areas of
+inquiry together by proposing a model to predict the probability of a bear market
+using the previous period’s yield spread (the difference between the yields on 10-year
+US Treasury bonds and 3-month T-bills). The idea is that the spread indicates the
+likelihood of a recession, which will in turn affect future stock returns. They find a
+negative relationship between the two, such that a spread of 55 basis points indicates a
+30% probability of a bear market during the next period, while a spread of -83 basis
+points indicates a 50% probability. Their approach is able to generate annual
+1 Speech by the Chairman of the Federal Reserve, Alan Greenspan, at the Annual Dinner and Francis
+Boyer Lecture of the American Enterprise Institute for Public Policy Research, Washington DC,
+December 5, 1996.
+2
+
+--- Page 3 ---
+abnormal returns of 2.3% for the US and for other international stock indices (see also
+Liu, Resnick and Shoesmith, 2004).
+A final family of rules involves employing volatility forecasts to time exits from
+equities or switches between style classes within equities. Copeland and Copeland
+(1999) use changes in an implied volatility index (“the VIX”) to profitably time style
+movements in investment portfolios. Their strategy suggests that investors should
+purchase large cap stocks and value stocks when volatility is expected to increase, and
+they should buy small and growth stocks when it is expected to fall.
+2. Contributions
+To these authors’ knowledge, this is the first study to compare a number of different
+types of market timing rules on a consistent basis using a single set of data. Many
+observers are sceptical about the usefulness of such rules in part as a result of the
+apparently entirely arbitrary choices made concerning parameters that must be set by
+the user. These parameters are embedded in the rules, and may have a profound
+impact on their profitability, but are often selected on the basis of an examination of a
+range of values and reporting the one that “seemed to work best”. If the rules that
+worked were discovered after an extensive search through a large universe of similar
+rules – that is, they were a product of data mining, they are unlikely to continue to
+work when employed using a different set of data. This is particularly true of rules
+that are empirically rather than theoretically motivated – i.e., if they are based on
+looking hard at the data rather than thinking carefully about why they should work, as
+Conrad et al. (1993) show to spectacular effect. By contrast, the present study
+conducts a detailed assessment of the impact of modifying the user-adjustable
+parameters on the profitability of the rules.
+On average, rules that involve investing in equities for a higher proportion of the time
+will yield higher profits than those spending most of their time in T-bills. Therefore,
+we account for the impact of this on trading rule performance using a bootstrapping
+approach. This is particularly important in view of Beebower and Varikooty’s (1991)
+simulation results, which suggested that abnormal returns of at least 1% per month are
+required to be able to detect significant out-performance using 4 years of data and
+standard regression-based techniques. Detecting abnormal performance of 2% per
+year or less would require more than a lifetime of monthly data points. By contrast,
+our bootstrapping approach allows us to detect significant out-performance using
+considerably smaller samples.
+A further innovation is to use a much longer data series than used by many existing
+studies, extending back to January 1871 by employing Shiller’s extended S&P 500
+Composite Index. This presents us with a much larger number of business cycles and
+of bull and bear runs over which to compute model parameters and to compare the
+usefulness of the rules. Finally, we examine the results of the trading rules not only
+using traditional performance evaluation measures such as the Sharpe ratio, but also
+using the increasingly popular omega function developed by Keating and Shadwick
+(2002). This is important since the distributions of the returns to the various trading
+strategies are significantly non-normal and hence traditional metrics that ignore this
+property could be severely misleading concerning the investor’s utility.
+3
+
+--- Page 4 ---
+The remainder of this paper is laid out as follows. Section 3 presents the various
+market-timing approaches that we employ, and describes our robustness checks and
+sensitivity analyses. The data that we employ are presented in Section 4, with the
+results discussed in Section 5. Section 6 offers concluding remarks.
+3. Market Timing Rules and Robustness Checks
+We employ and compare four different sets of market timing rules in this paper: 1) an
+approach based on the Treasury bond-equity yield ratio; 2) an approach based on
+speculative bubbles; 3) an approach based on the difference between the price-
+earnings ratio and Treasury yields; 4) a model for predicting when bear markets will
+occur based on the term spread. The first and third of these approaches are very
+simple, requiring only spreadsheet calculations and the application of a mechanistic
+rule. The second and fourth approaches, however, require the estimation of statistical
+models. Each of the methods will now be discussed in turn. The “base case” rules
+proposed in previous studies are examined first, and the sensitivity of the profitability
+to changes in any arbitrarily set parameters are then considered.
+3.1 The gilt-equity yield ratio
+The Gilt-Equity Yield Ratio (GEYR) is defined as the ratio of the income yield on
+long-term government bonds (“gilts”) to the dividend yield on equities. It has been
+suggested that the current value of the GEYR might be a useful tool for investment
+managers or market analysts in determining whether to invest in equities or whether to
+invest in bonds (see Clare et al., 1994). Thus the GEYR is purported to contain
+information useful for determining the likely direction of future equity market trends.
+The GEYR is assumed to have a long-run equilibrium level, deviations from which
+are taken to signal that equity prices are at an unsustainable level. If the GEYR
+becomes high relative to its long-run level, equities are viewed as being expensive
+relative to bonds. The expectation, then, is that for given levels of bond yields, equity
+yields must rise which will occur via a fall in equity prices. Similarly, if the GEYR is
+well below its long-run level, bonds are considered expensive relative to stocks, and
+by the same analysis, the price of the latter is expected to increase. Thus, in its crudest
+form, an equity trading rule based on the GEYR would say, “if the GEYR is low, buy
+equities; if the GEYR is high, sell equities.”
+Three papers have sought to investigate the predictive power of the GEYR for
+changes in equity prices and whether the GEYR can be usefully employed in a trading
+rule to determine when investors should be in equities and when in bonds. Clare et al.
+(1994) evaluate a number of different trading rules incorporating the GEYR, and
+observe that the rules yield higher average returns and lower standard deviations than
+a buy-and-hold equities strategy. However, their trading rule analysis is based on just
+11 quarterly out-of-sample observations that occur during the 1990’s, at a time when
+GEYR was consistently above its historical average.
+More recent studies by Levin and Wright (1998) and Brooks and Persand (2001) also
+find timing rules based on the GEYR to be useful. The latter study proposes a
+Markov-switching model, which is applied in the context of the US, UK and German
+markets, and observes that the GEYR works very well for the UK, but is only just
+able to beat a buy-and-hold-equities rule in risk-adjusted terms for the US and
+Germany. In this study, we employ the “Hoare Govett rule” as our “base case”
+scenario, which is widely examined within the UK fund management industry. The
+4
+
+--- Page 5 ---
+rule states that investors should sell equities when the GEYR rises above 2.4, and buy
+back in when it falls below 2.
+3.2 Predicting turning points in equity markets using speculative bubbles
+The fundamental value of a security can be thought of as the present value of all its
+future cash flows. The divergence of the actual price of a financial asset from its
+fundamental value is termed a bubble. Speculative bubbles have the special
+characteristic that they are persistent, systematic and increasing deviations of prices
+from their fundamental values. In the presence of speculative bubbles, positive
+expected bubble returns will lead to increased demand and will thus force prices to
+diverge from their fundamental value. If the expectation of positive excess returns
+remains unchanged and the investor is compensated for the increased risk of bubble
+collapse, then these excess or abnormal returns will be realized in an increasing
+fashion. Thus, even though investors observe that stocks are overvalued, they are not
+willing to close out their positions because the bubble component offers at least the
+required rate of return. Data from 1987 show that, before the October 1987 crisis,
+70% of private and 85% of institutional investors knew that the market was
+overvalued but they did not liquidate their holdings.
+At their most basic level, many tests for bubbles are based on a comparison of the
+path that a security price follows over time with a measure of the security’s
+“fundamental price” – that is, the price that could have been justified at that time by
+the intrinsic worth of the asset given the profitability of the firm. A study by van
+Norden and Schaller (1993) proposed a switching regime speculative behavior model
+for testing for the presence of periodically partially collapsing speculative bubbles.
+The model specifies separate equations for returns when the bubble is still growing in
+size, and when it collapses. The probability of the bubble bursting is a function of the
+size of the bubble.
+Brooks and Katsaris (2005a) proposed that the above model could be augmented by
+the inclusion of a measure of abnormal volume. They suggested that investors employ
+abnormal volume as a useful explanatory variable in determining the probability of
+bubble survival, and it can be considered a sign that other investors are selling the
+bubbly asset. As the bubble expands and more investors sell because they perceive the
+crash to be imminent, holders of the asset will observe an ever-increasing abnormal
+volume and will thus be adjusting their own estimate of when the bubble will collapse
+even more. Once a sufficient number of investors perceive that the market no longer
+believes the bubble will continue to exist, they liquidate their holdings in the bubbly
+asset simultaneously thus causing the bubble to collapse. The linear version of the
+Brooks and Katsaris (2005a) model is
+r =β +β B +β V x +uS (1)
+t+1 S,0 S,b t S,V t t+1
+r =β +β B +uC (2)
+t+1 C,0 C,b t t+1
+P(r W = S)=Ω(β +β B +γ Vx) (3)
+t+1 t+1 q,0 q,b t q,V t
+where r is the gross stock market return at time t+1, uS is the unexpected return in
+t+1 t+1
+the surviving regime, uC is the unexpected return in the collapsing regime and Ω is
+t+1
+the cumulative density function for a standard normal distribution. Equation (1) states
+that the returns in the surviving regime are a function of the relative size of the
+bubble, B and of the measure of abnormal volume, Vx. The beta terms are parameters
+t t
+5
+
+--- Page 6 ---
+to be estimated. In effect, equation (1) implies that as the bubble grows, investors
+demand higher returns in order to compensate them for the probability of a bubble
+collapse and since abnormal volume signals a possible change in the long run trend in
+equity prices, investors want to be compensated for this risk as well. The above linear
+switching regression model has a probability of being in the surviving regime
+P(r W = S) that is a function of the size of the bubble and of the measure of
+t+1 t+1
+abnormal volume.
+Once the model described by equations (1) to (3) is estimated, one can calculate from
+it the probability of a market crash of a given size at each point in time. If the
+probability of a crash during the next month is sufficiently high, investors should sell
+equities and move into bonds. We employ as our base case the rule that investors
+should sell equities if the probability of a crash exceeds 90% of its historical average
+value, and they should re-invest in equities when this probability falls below 50% of
+its historical average value.
+In order to calculate fundamental values and real gross returns, we use data taken
+from Shiller (2000)2. The measure of monthly abnormal volume is calculated as the
+monthly average of daily share volume, reported by the NYSE3, and then the
+percentage deviation of last month’s volume from the 6 month moving average is
+taken4. This moving average is constructed using only lagged volume figures that
+would have been included in agents’ information sets. The monthly dividend and
+price series are transformed into real variables using the monthly U.S. Consumer
+Price - All Items Seasonally Adjusted Index reported by Shiller (2000). We employ as
+our base case that we should sell equities if the probability of a crash exceeds the 90th
+percentile of its historical values, and buy back in if the probability of a crash falls
+below its historical 50th percentile.
+3.3 P-E ratios and Treasury yields
+As described above, Shen’s approach involves selling equities if the E-P yield spread
+falls below the tenth percentile of its historic values. We employ this as our base case
+for both the long- and short-spreads.
+3.4 Predicting bear markets using the term spread
+Resnick and Shoesmith suggest that if you can time the economic cycle, this will help
+to predict future earnings, which in turn will feed through into stock prices. The
+model is
+Pr(R = 1) = F(a + a spread) + u (4)
+t+1 0 1 t t
+where Pr(⋅) denotes a probability, R = 1 if equities are in a bear market of at least 6
+t+1
+months’ duration – in other words, if the average return over the past 6 months is
+negative. They find that a 50% cut-off works best (which we use as our base case),
+but they also investigate 30% and 40%. Thus the base rule says that you should sell
+2 Data available at: http://www.econ.yale.edu/~shiller/data.htm. For a description of the data used see also Shiller
+(2000) and the description online. Shiller’s sample ends in January 2000, but we update his sample until August
+2003 using data obtained from Datastream. In order to verify that the two datasets are consistent, we compare
+Shiller’s data from January 1965 to January 2000 with the values from Datastream and find no differences.
+3 Data available at: http://www.nyse.com/marketinfo/marketinfo.html.
+4 We also examined unusual trading volume measures using 3, 12 and 18 month moving averages but found that
+the deviation from the 6-month moving average has the highest explanatory power in predicting both the level and
+the generating state of returns. The results for the other measures of abnormal volume are not presented for brevity
+and are available upon request from the authors.
+6
+
+--- Page 7 ---
+equities if the probability that equities are in a bear market based on the most recently
+available 6 months of data is greater than 50%.
+3.5 Robustness checks and sensitivity analysis
+For each trading strategy, we note the number of round trip trades that the rule has
+generated over the trading period in order to consider the impact of transaction costs
+on trading profits, and we also note the percentage of time that an investor following
+the rule would have invested in equities.
+One of the difficulties for market timing rules is that they tend to under-perform a
+buy-and-hold rule because, over the past 50 years, equity markets have on average
+significantly outperformed bond markets. So when the rules are examined over very
+long periods of time, any modest successes in determining when to stay out of equities
+could be lost as a result being out of the market too long when returns are positive.
+Therefore, we also take into account the amount of time that a particular rule is in
+equities, and we ask the question, “given the proportion of time that this rule has
+suggested investing in equity markets, does the rule generate statistically significant
+returns? ” To do this, we form 10,000 trading rules created by randomly generating
+series of zeros and ones, the total number of which is equal to the number of months
+in our trading sample (January 1927–January 2003, or 920 months). The number of
+ones is set equal to the percentage of time that trading rule would suggest the investor
+to be in the market. We thus ensure that the “random trading rules” have comparable
+average holding periods in equities to our trading rules so that we can separate pure
+timing ability from the effects of the average returns of equities and bonds. In order to
+test for the statistical significance of the bubble rules, we compare the returns with
+those of the random rules and if our model yields a profit larger than 90%, 95% or
+99% of the random trading rules, we can conclude that our abnormal profits are
+statistically significant at the 10%, 5% and 1% levels respectively.
+4. Data
+Since some of the market timing approaches are implicitly related to attempting to
+predict turning points in the business cycle, we considered it important to obtain as
+long a span of data as possible in order to ensure that a large number of cycles are
+covered. This implies that the rules are evaluated over a sufficiently long span of data
+that any significant profitability cannot be attributed to a rule working well by chance
+alone for a brief period. We employ monthly data for the S&P 500 from January 1871
+until August 2003, a total of 1,592 observations. The S&P 500 index prices, dividend
+yield and P/E ratios were obtained from Shiller’s web site as described above. Data on
+10-year US Treasury rates and T-bills were obtained from Global Financial Data5.
+All of the strategies described below employ data from January 1871 – December
+1926 for initial estimation of the model parameters and a prediction or signal is
+generated for January 1927. It is assumed that the investor’s entire wealth is invested
+in either equities or in T-bills for that month. The sample is then extended by one
+month, a signal is produced for February 1927 and so on until the sample is
+exhausted. Our comparison of the various market-timing rules thus involves 920
+independent monthly out-of-sample observations. The use of such a long initial in-
+5 T-bill yields were only available from January 1920, and so prior to this date, private commercial bill
+yields are used. This should be inconsequential for our results since the calculation of trading rule
+performance does not begin until 1927.
+7
+
+--- Page 8 ---
+sample period is necessitated by our desire to examine the bubble models that are
+relatively data-intensive.
+5. Results
+The average annualized gross returns for each of the trading rules are presented in
+Exhibit 1. It is clear that, before transactions costs, all of the market timing
+approaches except that based on bubbles are able to beat a strategy of buying and
+holding equities. In pure return terms, the best rule, based on the difference between
+the earnings-price ratio and short term Treasury yields, earns average returns of
+0.96% per month (12.1% annualised), compared with 0.94% for buying and holding
+the equity index. All of the timing rules also have lower standard deviations of returns
+than buying and holding equities, as one would expect. Thus, even though the
+dynamic equity-bond allocation rules do not substantially increase returns, they lead
+investors out of equities at times when they are at their most volatile. This leads to
+Sharpe ratios of between 0.11 for the rule based on the speculative bubble model and
+0.14 for the ep-short yield rule, compared with 0.12 for holding equities.
+An important concern when evaluating a trading rule is the extent to which its
+profitability will be eaten away by transactions costs. In this case, the number of
+round trip transactions (buy and sell) given in column 5 of Exhibit 1, varies from 5 or
+7 for the earnings-price-yield rules to 27 for the bubble model, over an almost 80 year
+period. Thus, even for retail investors, the net abnormal returns from the most
+profitable models would be positive.
+We also try to allow for the fact that market timing rules often fare poorly when
+evaluated over long time periods as a result of the upward drift in stock prices over
+time. The penultimate column of Exhibit 1 shows the percentage of months that each
+strategy is invested in equities (with the remainder of time invested in bills). For all of
+the approaches except the bubble model, investors following the rules would have
+held equities most of the time. The latter approach, however, would only have
+suggested holding equities less than half of the time, and this degrades performance.
+An examination of Exhibit 2 reveals that the bubble model successfully avoided the
+bear run of the early 1930’s, but it lost out on a long rally during the early 1950’s.
+Following the model’s signals would have led investors to sell equities in advance of
+the October 1987 stock market crash, buying back in immediately after the correction.
+However, the poor performance of the bubble rule in pure return terms is attributable
+to its signal to sell equities in 1997 and never to return by the end of our sample
+period in August 2003 – missing out on a stock market rise of almost 50% over the
+period.
+However, risk and return do not tell the whole performance story, since they only
+examine the first two moments of the return distribution. There is a growing literature
+and increasing awareness among practitioners of the importance of examining the
+higher moments of the return distribution (i.e. its skewness and kurtosis) in order to
+get a more accurate picture of the benefit to investors of a particular returns profile.
+This is particularly pertinent in the present context since the strategy returns are not
+normally distributed, and have option-like payoffs with positive skewness and lower
+kurtosis than a buy-and-hold equities position. To this end, Exhibit 1 also presents the
+8
+
+--- Page 9 ---
+log omega ratios for each strategy6 - a measure that captures all moments of the
+distribution and is now widely quoted in the analysis of hedge funds. The omegas
+interestingly suggest that the Treasury bond-equity yield ratio is the superior strategy
+when the whole distribution of returns is considered, and the approach based on
+speculative bubbles is now the second best. All of the market timing strategies are at
+least as good as holding equities.
+The final column of Exhibit 1 shows the percentage of random trading rules that the
+strategies would have beaten, ensuring that they have the same proportion of time in
+equities. We could classify the profits of a rule as being statistically significant at the
+5% level if it is able to beat 95% of random trading rules. Using this criterion, all of
+the approaches achieve statistically significant abnormal returns given the amount of
+time they are in equities. On this measure, the speculative bubble model is actually the
+best performer since it can beat 99% of randomised trading rules generated investing
+in equities only 45% of the time. This result serves to underlie how difficult it is for
+timing rules to outweigh the general upward drift in equities over long runs of data.
+The dynamic allocations to equities and bonds over time from the timing rules are
+shown in Exhibit 3. There are two possible positions for each line at each point in
+time, and the upper position indicates that the rule would have recommended equities,
+while the lower position suggests bonds. The relatively large number of trades
+involved with implementing the bubble model can be seen in the first part of the chart,
+while the base-case parameter for the bear market forecasting approach would sell
+equities only for a brief period in the early 1980’s. There is relatively little to choose
+between the two approaches based on the EP-Treasury yield ratio.
+A good trading strategy would be one which embodies user-adjustable parameters that
+are either based on solid financial theory, or that can be varied within a reasonable
+range without significantly affecting profitability. To this end, we examine in Exhibits
+4 and 5 the sensitivity of the trading rule profits to changes in parameters or threshold
+values incorporated into the rules. Exhibit 4 investigates the effect of modifying the
+GEYR buy part of the rule (keeping the sell part fixed) and vice versa within the
+range 1 to 4 in steps of 0.1. The thick straight line denotes the base case profit. It is
+clear that the strategy returns are robust to reasonable variations in both the buy and
+the sell parts of the rule, although too low a value of the buy part (2 or less) implies
+that investors are not quick enough to buy back into equities after their prices have
+fallen, leading them to miss out on any subsequent rally.
+Exhibit 5 examines the sensitivity of the trading profits for the earnings-price-yield
+and bear market strategies. The thick straight line in this case refers to the base case
+profitability of the EP-short yield rule. The profitability of the EP-yield approach is
+hardly affected by even large changes in the value required to induce a switch from
+equities to T-bills, and profitability is maintained or enhanced relative to the base case
+within the range 0.01 to 0.67. Thereafter, profitability diminishes rapidly.
+This exhibit also shows that even though it was the second most profitable rule in
+terms of the base case, the bear market approach is less robust to rises in the
+6 The log omega is measured around a threshold of zero, but using some other value such as the
+Treasury-bill return does not change the rank ordering of the ratios.
+9
+
+--- Page 10 ---
+probability threshold7. All other cut-off thresholds lead to considerably lower profits.
+For example, a threshold of 70% instead of 60% will lead to a fall in average profits
+by over 6 percentage points per year.
+Finally, the highest attainable returns from the various strategies based on a grid-
+search over a range of values of the user-adjustable parameters are presented in
+Exhibit 6. Most of the rules show significant improvements compared with Exhibit 1,
+as one would expect, with Sharpe ratios increased by 10-40%. The Treasury bond-
+equity yield ratio, which was previously a poor performer, is now the best in risk-
+adjusted terms, achieving a Sharpe ratio of 0.18. This set of parameters implies selling
+equities relatively infrequently, but quickly buying back once the price correction has
+occurred. Interestingly, the results for the bear market prediction rule are identical to
+those in exhibit 1, since the base case probability threshold of 50% was the best
+threshold. Resnick and Shoesmith’s (2002) study had recommended the use of a 50%
+rule, although our sample period is considerably longer than theirs
+6. Conclusions
+Many academics approach the market timing debate with a great deal of scepticism,
+but our results suggest that this may be misplaced since all rules bar one were found
+to supply returns in excess of holding the index. Moreover, if we employ the omega
+ratio, an approach that considers the entire distribution of returns and not just the
+mean and variance, the timing strategy based on speculative bubbles is the second
+best and all approaches outperform a buy-and-hold equities rule. Market timing rules
+are widely used in the industry for dynamic asset allocation, by pension and hedge
+funds in particular, and the penalties for getting it wrong can be severe. The approach
+based on the difference between the earnings-price ratio and short term Treasury
+yields worked best. All of the rules (except the bubble approach, which was arguably
+the least effective anyway) employ information from fixed income yields in some
+form. These act as both a barometer of the stage in the business cycle and as a
+benchmark against which to gauge equity valuations. Some of the rules also have
+explicit measures of whether equities are currently over-valued.
+Future research may usefully examine the applicability of these strategies for other
+international markets or for asset allocation at the sector or individual stock level.
+There is also still scope for further refinement of the rules, without resorting to data
+mining and additional thought should be given to their theoretical underpinnings. We
+know that some market timing rules work, but why? It is relatively easy to supply ex
+post justifications for why certain strategies were profitable but it is much harder to
+back this up with solid financial theory.
+References
+Brooks, C. and Katsaris, A. (2005a) A Three-Regime Model of Speculative Behaviour:
+Modelling the Evolution of Bubbles in the S&P 500 Composite Index Economic Journal
+forthcoming.
+Brooks, C. and Katsaris, A. (2005b) “Trading Rules from Forecasting the Collapse of
+Speculative Bubbles for the S&P 500 Composite Index” Journal of Business forthcoming.
+7 For probability thresholds below 51% for the bear rule or thresholds below 0.56 for the EP-based
+rules, investors would simply hold equities throughout the trading sample period.
+10
+
+--- Page 11 ---
+Brooks, C. and Persand, G. (2001) The Trading Profitability of Forecasts of the Gilt-Equity
+Yield Ratio” International Journal of Forecasting 17, 11-29.
+Brunnermeier, M.K. and Nagel, S. (2004) “Hedge Funds and the Technology Bubble”
+Journal of Finance 59(5), 2013-2040.
+Clare, A.D., Thomas, S.H., and Wickens, M.R. (1994) Is the gilt-equity yield ratio useful for
+predicting UK stock returns? Economic Journal 104, 303-315.
+Clarke, R.G., Fitzgerald, M.T., Berent, P. and Statman, M. (1989) Market Timing with
+Imperfect Information Financial Analysts Journal 45(6), 27-36.
+Conrad, J., Cooper, M. and Kaul, G. (2003) Value versus Glamour Journal of Finance 58(5),
+1969-1995.
+Copeland, M.M. and Copeland, T.E. (1999) Market Timing: Style and Size Rotation using the
+VIX Financial Analysts Journal 55(2), 73-81.
+Keating, C. and Shadwick, W.F. (2002) A Universal Performance Measure Journal of
+Performance Measurement Spring, 59-84.
+Levin E.J., and Wright, R.E. (1998) The Information Content of the Gilt-Equity Yield Ratio
+Manchester School Supplement, 89-101.
+Liu, W., Resnick, B.G. and Shoesmith, G.L. (2004) Market Timing of International Stock
+Market using the Yield Spread Journal of Financial Research forthcoming.
+Resnick, B.G. and Shoesmith, G.L. (2002) Using the Yield Curve to Time the Stock Market
+Financial Analysts Journal May/June, 82-90.
+Sharpe, W. (1975) Likely Gains from Market Timing Financial Analysts Journal March/April
+61.
+Shen, P. (2003) Market Timing Strategies that Worked Journal of Portfolio Management
+Winter, 57-68.
+Shiller R., (2000). ‘Irrational Exuberance’, Princeton: Princeton university Press.
+van Norden S. and Schaller H., (1993). ‘The Predictability of Stock Market Regime: Evidence
+from the Toronto Stock Exchange’, Review of Economics and Statistics, 75, 505-510.
+Wong, W.K., Vhew, B-K., and Sikorski, D. (2001) Can the Forecasts Generated from E/P
+Ratio and Bond Yield be used to Beat Stock Markets? Multinational Finance Journal 5(1),
+59-86.
+11
+
+--- Page 12 ---
+Exhibit 1: Monthly Profits for Market Timing Strategies – Base parameter values
+January 1927-August 2003.
+Strategy type Gross Standard Sharpe Log-Omega Number of Time in Random rules
+return (%) deviation ratio Ratio round trips equities beaten in returns
+GEYR 0.765 3.30 0.136 1.29 14 72% 86%
+EPS 0.959 4.58 0.140 0.63 7 88% 98%
+EPL 0.878 4.28 0.131 0.68 5 82% 96%
+Bear 0.947 4.95 0.127 0.55 12 93% 97%
+Bubble 0.712 3.66 0.108 1.15 24 45% 99%
+Hold equities 0.937 4.96 0.125 0.55 1 100% -
+Hold T-bills 0.318 0.26 - - 0 0% -
+Notes: GEYR is the strategy based on the gilt-equity yield ratio; EPS is the strategy based on the
+difference between the EP-ratio and the 3-month T-bill yield; EPL is the strategy based on the
+difference between the EP-ratio and the 10-year T-bond yield; Bear is the strategy based on the probit
+model used to predict the probability of a bear market; Bubble is the regime switching bubble model
+used to predict the probability of a crash; time in equities is the proportion of the trading sample period
+that the strategies were invested in equities.
+Exhibit 2: Log S&P 500 Value and Bubble Rule Buy-Sell Signals
+3.4
+3.2
+3
+2.8
+2.6
+2.4
+2.2
+2
+1.8
+1.6
+1.4
+1.2
+1
+0.8
+0.6
+0.4
+0.2
+0
+12
+7291 9291 1391 3391 5391 7391 9391 1491 3491 5491 7491 9491 1591 3591 5591 7591 9591 1691 3691 5691 7691 9691 1791 3791 5791 7791 9791 1891 3891 5891 7891 9891 1991 3991 5991 7991 9991 1002 3002
+Log Real S&P 500 Composite Index
+Buy
+Sell
+Date
+
+--- Page 13 ---
+Exhibit 3: Investment decisions (equities versus bonds) of Market Timing Rules
+Note: the strategy suggests equities in the upper position and bonds in the lower position.
+Exhibit 4: Sensitivity Analysis for GEYR Rules – Impact on Profits of Modifying the
+Buy or Sell Equities Triggers
+13
+72-naJ 03-naJ 33-naJ 63-naJ 93-naJ 24-naJ 54-naJ 84-naJ 15-naJ 45-naJ 75-naJ 06-naJ 36-naJ 66-naJ 96-naJ 27-naJ 57-naJ 87-naJ 18-naJ 48-naJ 78-naJ 09-naJ 39-naJ 69-naJ 99-naJ 20-naJ
+BUBBLE
+EPL
+EPS
+BEAR
+GEYR
+0.9
+0.8
+0.7
+0.6
+0.5
+0.4
+1 1.5 2 2.5 3 3.5 4
+GEYR Threshold
+stiforp
+ylhtnom
+egarevA
+Buy rule profit
+Sell rule profit
+
+--- Page 14 ---
+Exhibit 5: Sensitivity Analysis for Bear Probability Model and EP-yield Strategies -
+Impact on Profits of Modifying the Sell Equity Trigger
+1
+0.9
+0.8
+0.7
+0.6
+0.5
+0.4
+0.3
+0.2
+0.1
+0.01 0.05 0.09 0.13 0.17 0.21 0.25 0.29 0.33 0.37 0.41 0.45 0.49 0.53 0.57 0.61 0.65 0.69 0.73 0.77 0.81 0.85 0.89 0.93 0.97
+Threshold
+Exhibit 6: Monthly Profits for Market Timing Strategies – Best ex post parameter values
+for maximising returns
+Strategy Strategy parameters Gross return Standard Sharpe ratio
+type (%) deviation
+GEYR Sell equities if the GEYR rises above 2.05 0.830 2.910 0.176
+and buy back when it falls below 2
+EPS Sell equities if EP-short yield is below its 0.973 4.753 0.138
+first percentile historical value
+EPL Sell equities if EP-long yield is below its 0.983 4.572 0.145
+first percentile historical value
+Bear Sell equities if the probability of a bear 0.987 4.663 0.143
+market > 50%
+Bubble Sell equities when the probability of a crash
+exceeds its 97th percentile and buy back 0.788 3.830 0.123
+when it falls below its 50th percentile
+Notes: See Exhibit 1.
+14
+tiforP
+ylhtnoM
+EPS
+EPL
+Bear
