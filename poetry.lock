@@ -1511,6 +1511,21 @@ test-full = ["adlfs", "aiohttp (!=4.0.0a0,!=4.0.0a1)", "cloudpickle", "dask", "d
 tqdm = ["tqdm"]
 
 [[package]]
+name = "gplearn"
+version = "0.4.2"
+description = "Genetic Programming in Python, with a scikit-learn inspired API"
+optional = false
+python-versions = "*"
+files = [
+    {file = "gplearn-0.4.2-py3-none-any.whl", hash = "sha256:4c7204c48ca0a8d8590d085bb2b7b0446245c3796f8d85ee477464de07d27a4d"},
+    {file = "gplearn-0.4.2.tar.gz", hash = "sha256:31b6d04562e639689c44f5bd1475d87201084e7689a986f1784f10a1175b7814"},
+]
+
+[package.dependencies]
+joblib = ">=1.0.0"
+scikit-learn = ">=1.0.2"
+
+[[package]]
 name = "graphviz"
 version = "0.20.3"
 description = "Simple Python interface for Graphviz"
@@ -5843,4 +5858,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.13"
-content-hash = "036506ca92baf728c9b00281199369f69fe6788ea5f2bbc7b38e357808da75f6"
+content-hash = "872e0a6f3c4a45eff4bb8c87cd66d47e077df464cc079ff02259fe7415523bba"
