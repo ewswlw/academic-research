@@ -2,6 +2,7 @@
 
 - Act like an expert in algo trading/stats
 - everything must be done within my poetry environment
+- all backtesting must be done using vectorbt
 
 ## 0. Scope & Success Criteria
 - everything should be in the same directory
@@ -43,7 +44,6 @@
 - Load `monthly_all.csv`
 - Ensure index is a **monotonic monthly `DatetimeIndex`**
 - Check:
-  - Exactly 91 rows
   - Drop NaNs or duplicates
 - Visual sanity checks:
   - Raw price plot
