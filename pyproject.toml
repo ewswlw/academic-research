@@ -56,6 +56,9 @@ tsfresh = "^0.21.0"
 fredapi = "^0.5.2"
 matplotlib = "^3.10.1"
 pdfplumber = "^0.11.6"
+market = "^0.0"
+pymupdf = "^1.26.3"
+marker-pdf = {git = "https://github.com/datalab-to/marker.git"}
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
