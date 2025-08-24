@@ -59,6 +59,7 @@ pdfplumber = "^0.11.6"
 market = "^0.0"
 pymupdf = "^1.26.3"
 marker-pdf = {git = "https://github.com/datalab-to/marker.git"}
+claude-code = "^0.0.1"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"

@@ -849,6 +849,18 @@ retrying = ">=1.3.3"
 six = "*"
 
 [[package]]
+name = "claude-code"
+version = "0.0.1"
+description = "Reserved"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "claude_code-0.0.1-py3-none-any.whl", hash = "sha256:e576e5c95ce231b99ec550db46c1c44280c69ebe352b25d17c5fb355751d9391"},
+    {file = "claude_code-0.0.1.tar.gz", hash = "sha256:655af6860495cfb0b7e51ef4fd7d98f367a68c0471ba04e7815816c2889704e5"},
+]
+
+[[package]]
 name = "click"
 version = "8.2.2"
 description = "Composable command line interface toolkit"
@@ -7324,4 +7336,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.13"
-content-hash = "f030247840127674299245ee37433ee0c87967ec714997e8672d63396b242f29"
+content-hash = "cb183a6157adfd812663a81749f533aac43132cd01bda30030ac278f34ee8fb7"
